@@ -15,3 +15,12 @@ def home():
         title='Home Page',
         year=datetime.now().year,
     )
+
+@app.route('/log')
+def log():
+    reports = []
+    return render_template(
+        'log.html',
+        reports = reports,
+        year=datetime.now().year,
+        title='Reports Log')

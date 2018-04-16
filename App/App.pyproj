@@ -28,12 +28,25 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="App\api.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="App\models.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="App\Tests\APITests.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="config.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="runserver.py" />
     <Compile Include="App\__init__.py" />
     <Compile Include="App\views.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App\" />
+    <Folder Include="App\Tests\" />
     <Folder Include="App\static\" />
     <Folder Include="App\static\content\" />
     <Folder Include="App\static\fonts\" />
@@ -41,6 +54,9 @@
     <Folder Include="App\templates\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App\static\scripts\logScript.js" />
+    <Content Include="App\templates\log.html" />
+    <Content Include="App\Tests\testRequests.txt" />
     <Content Include="requirements.txt" />
     <Content Include="App\static\content\bootstrap.css" />
     <Content Include="App\static\content\bootstrap.min.css" />
@@ -64,8 +80,6 @@
     <Content Include="App\static\scripts\respond.js" />
     <Content Include="App\static\scripts\respond.min.js" />
     <Content Include="App\static\scripts\_references.js" />
-    <Content Include="App\templates\about.html" />
-    <Content Include="App\templates\contact.html" />
     <Content Include="App\templates\index.html" />
     <Content Include="App\templates\layout.html" />
   </ItemGroup>
