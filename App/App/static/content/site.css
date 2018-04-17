@@ -40,3 +40,13 @@ input[type="checkbox"].input-validation-error {
 .validation-summary-valid {
     display: none;
 }
+
+#map {
+    width: 300px;
+    height: 300px;
+}
+
+.reportImage {
+    width: 300px;
+    height: 300px;
+}

@@ -1,13 +1,16 @@
 ﻿{% extends "layout.html" %}
 
 {% block content %}
-<script src="/static/scripts/logScript.js"></script>
+
 <div>
     <!-- Search bar -->
     <!-- advanced search button-->
     <!-- div where advanced options will appear-->
 </div>
+<div id="map"></div>
+
 <h2>Reports Log</h2>
+
 <table class="table table-hover">
     <thead>
         <tr>
@@ -20,21 +23,22 @@
         </tr>
     </thead>
     <tbody id="reportsView">
-<!--        {% for report in reports %}
+        <!--        {% for report in reports %}
 
-        <tr>
-            <a href="/"></a>
-            <td>report.id</td>
-            <td>report.username</td>
-            <td>repoert.location</td>
-            <td>report.date</td>
-            <td>report.type</td>
-            <td>report.description</td>
-        </tr>
+                <tr>
+                    <a href="/"></a>
+                    <td>report.id</td>
+                    <td>report.username</td>
+                    <td>repoert.location</td>
+                    <td>report.date</td>
+                    <td>report.type</td>
+                    <td>report.description</td>
+                </tr>
 
-        {% endfor %}
--->
+                {% endfor %}
+        -->
     </tbody>
 </table>
-
+<script src="/static/scripts/logScript.js"></script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBbVKx_ahhNY0PBFheQ_dH6XNssuk78zqk&callback=initMap"></script>
 {% endblock %}
