@@ -2,6 +2,7 @@ from passlib.apps import custom_app_context as pwd_context
 from datetime import datetime
 from App import db
 
+# TODO: add user types: admin, normal user
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64),index=True, unique=True)

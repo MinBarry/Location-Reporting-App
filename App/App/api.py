@@ -5,20 +5,20 @@ from App.models import Report, User
 
 report_types = ['Routine', 'Emergency','Special']
 success = {'code':1}
-# Route to create a new user
+# TODO: Route to create a new user
 
-# Route to edit user
+# TODO: Route to edit user
 
-# Route to delete user
+# TODO: Route to delete user
 
-# Route to user login 
+# TODO: Route to user login 
 
-# Route to user logout
+# TODO: Route to user logout
   
 # Route to create reports
 @app.route('/api/reports', methods = ['POST'])
 def create_report():
-    # Verify user and get user id from token
+    # TODO: Verify user and get user id from token
     user_id = None
     # Retrieve request contents 
     if not request.json or not 'type' in request.json:
@@ -45,7 +45,8 @@ def create_report():
 # Route to get reports list
 @app.route('/api/reports', methods = ['GET'])
 def get_reports_list():
-    # Authorize admin
+    # TODO: Authorize admin
+    # TODO: pagination
     reports = Report.query.all()
     reportslist = []
     for report in reports:
@@ -55,7 +56,7 @@ def get_reports_list():
 # Route to get single report
 @app.route('/api/reports/<int:id>', methods = ['GET'])
 def get_report(id):
-    # Authorize admin
+    # TODO: Authorize admin
     report = Report.query.get(id)
     if not report:
         abort(404)
@@ -64,7 +65,7 @@ def get_report(id):
 # Route to delete reports
 @app.route('/api/reports', methods = ['DELETE'])
 def delete_report():
-    # Authorize admin
+    # TODO: Authorize admin
     if not request.json or not 'id' in request.json:
         abort(400)
     id = request.json.get('id')
@@ -80,9 +81,9 @@ def delete_report():
         abort(400)
     return jsonify(success)
 
-# Route to admin login 
+# TODO: Route to admin login 
 
-# Route to send emails to users
+# TODO: Route to send emails to users
 
 # Error handeling 
 @app.errorhandler(400)
