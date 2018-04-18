@@ -50,3 +50,9 @@ input[type="checkbox"].input-validation-error {
     width: 300px;
     height: 300px;
 }
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

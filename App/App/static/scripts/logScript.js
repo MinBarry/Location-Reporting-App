@@ -1,14 +1,44 @@
 // TODO: change Google maps API Key: AIzaSyBbVKx_ahhNY0PBFheQ_dH6XNssuk78zqk
+
 var map
 var marker
 var reportsList
+var totalPages
+
+///////////////////////////////////////////
+// Displays reports summary list on page
+///////////////////////////////////////////
+function requestReportsList(page) {
+    $(".pagination").empty()
+    $("#reportsView").empty()
+    $.getJSON($SCRIPT_ROOT + '/api/reports?perpage=20&page='+ page,
+        function (data, status_code) {
+            reportsList = data.reports
+            totalPages = data.pages
+            displayReports(reportsList)
+            setPagination(totalPages, page)
+            // Show report details when a report is clicked 
+            $(".singleReport").click(function () {
+                $(".reportDetail").hide()
+                latlng = getLatLng($(this).attr("id"), reportsList)
+                map.setCenter(latlng)
+                marker.setPosition(latlng)
+                console.log(map.center)
+                $(this).next().show();
+                $(this).next().find(".reportMap").append(map.getDiv())
+                $("#map").show()
+            });
+        }
+    );
+}
+
 
 ///////////////////////////////////////////
 // Displays reports summary list on page
 ///////////////////////////////////////////
 function displayReports(reports) {
     $.each(reports, function (i, report) {
-        user = getUserInfo(report.user_id)
+        user = requestUserInfo(report.user_id)
         $("#reportsView").append(
             "<tr class='singleReport' id=" + report.id + ">" +
             "<td>" + report.id + "</td>" +
@@ -33,9 +63,26 @@ function displayReports(reports) {
 }
 
 ///////////////////////////////////////////
+// Create pageination 
+///////////////////////////////////////////
+function setPagination(numPages, currentPage) {
+    $(".pagination").empty()
+    for (var i = 1; i <= numPages; i++) {
+        if (currentPage == i) {
+            $(".pagination").append("<li class='active'><a>" + i + "</a></li>")
+        } else {
+            $(".pagination").append("<li><a>" + i + "</a></li>")
+        }              
+    }
+    $(".pagination").children().click(function () {
+        console.log("clicked page num")
+        requestReportsList($(this).text())
+    })
+}
+///////////////////////////////////////////
 // Requests user info from the server
 ///////////////////////////////////////////
-function getUserInfo(user_id) {
+function requestUserInfo(user_id) {
     var user = {firstname:"Jane",lastname:"Doe", email:"jane@host.com", phone:"664536373"}
     //TODO: get request to get user info
     return user
@@ -68,24 +115,8 @@ function initMap() {
     });
     $("#map").hide()
 }
-// TODO: show all report details
+
 $(function () {
-     // Request report list
-     $.getJSON($SCRIPT_ROOT + '/api/reports',
-        function (data, status_code) {
-            reportsList = data.reports
-            displayReports(reportsList)
-
-            // Show report details when a report is clicked 
-            $(".singleReport").click(function () {
-                $(".reportDetail").hide()              
-                map.setCenter = getLatLng($(this).attr("id"), reportsList)
-                console.log(map.center)
-                $(this).next().show();
-                $(this).next().find(".reportMap").append(map.getDiv())
-                $("#map").show()
-            });
-        }
-    );
-
+    // Request report list
+    requestReportsList(1)
 });

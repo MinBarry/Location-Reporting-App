@@ -47,11 +47,17 @@ def create_report():
 def get_reports_list():
     # TODO: Authorize admin
     # TODO: pagination
-    reports = Report.query.all()
+    page = 1   
+    perpage = 20
+    if request.args and 'page' in request.args:
+        page = int(request.args.get('page'))
+    if 'perpage' in request.args:
+        perpage = int(request.args.get('perpage'))
+    reports = Report.query.paginate(page=page, per_page=perpage, error_out=False)
     reportslist = []
-    for report in reports:
+    for report in reports.items:
         reportslist.append(report.jsonify())
-    return jsonify({'reports': reportslist})
+    return jsonify({'reports': reportslist, 'pages':reports.pages})
 
 # Route to get single report
 @app.route('/api/reports/<int:id>', methods = ['GET'])

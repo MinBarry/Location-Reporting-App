@@ -33,7 +33,8 @@ class APITestClass(unittest.TestCase):
         id = json.loads(respone.data)['reports']['id']
 
         # Check if report is in the database
-        respone = self.app.get('/api/reports')
+        respone = self.app.get('/api/reports?page=1&perpage=200')
+        self.assertEqual(respone.status_code,200)
         self.assertIn(id , [ r['id'] for r in json.loads(respone.data)['reports']])
         self.assertIn(description , [ r['description'] for r in json.loads(respone.data)['reports']])
         self.assertIn(int(lat) , [ r['lat'] for r in json.loads(respone.data)['reports']])
@@ -63,6 +64,45 @@ class APITestClass(unittest.TestCase):
         type = "None"
         respone = self.create_report(type, description, address, lat, lng, imagedata)
         self.assertEqual(respone.status_code,400)
+   
+    def test_reports_limit(self):
+        ids = []
+        limit = 1000
+        # create 1000 report
+        for i in range(0,limit):
+            type = "Special"
+            description = "Test report"
+            address = "address"
+            lat = "-25.363"
+            lng = "131.044"
+            imagedata = "image data"
+            respone = self.create_report(type, description, address, lat, lng, imagedata)
+            self.assertNotEqual(respone.status_code,400)
+            ids.append(json.loads(respone.data)['reports']['id'])
+
+        # retreive 1000 reports one per page
+        for i in range(0,limit):
+            respone = self.app.get('/api/reports?page='+ str(i+1) +'&perpage=1')
+            self.assertEqual(respone.status_code,200)
+            self.assertIn(ids[i] , [ r['id'] for r in json.loads(respone.data)['reports']])
+        
+        # retreive 1000 reports 20 per page
+        for i in range(0,limit//20):
+            respone = self.app.get('/api/reports?page='+ str(i+1) +'&perpage=20')
+            self.assertEqual(respone.status_code,200)
+            for j in range(0,20):
+                print("i:"+str(i))
+                print("j:"+str(j))
+                print(ids)
+                print(json.loads(respone.data)['reports'])
+                self.assertIn(ids[j+(i*20)] , [ r['id'] for r in json.loads(respone.data)['reports']])
+        
+        # delete 1000 reports
+        for i in range(0,limit):
+            respone = self.app.delete('/api/reports', content_type='application/json', data=json.dumps({'id':ids[i]}))
+            self.assertEqual(respone.status_code,200)
+            respone = self.app.get('/api/reports/'+str(ids[i]))
+            self.assertEqual(respone.status_code,404)
 
     def create_report(self, type, description, address, lat, lng, imagedata):
         return self.app.post('/api/reports', data=json.dumps({'type':type, 'description':description,

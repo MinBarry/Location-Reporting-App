@@ -7,7 +7,6 @@
     <!-- advanced search button-->
     <!-- div where advanced options will appear-->
 </div>
-<div id="map"></div>
 
 <h2>Reports Log</h2>
 
@@ -22,10 +21,15 @@
             <th>Description</th>
         </tr>
     </thead>
-    <tbody id="reportsView">
-
-    </tbody>
+    <tbody id="reportsView"></tbody>
 </table>
-<script src="/static/scripts/logScript.js"></script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBbVKx_ahhNY0PBFheQ_dH6XNssuk78zqk&callback=initMap"></script>
+
+<div class="col-sm-12">
+    <ul class="pagination">
+    
+    </ul>
+</div>
+<div hidden id="map"></div>
+    <script src="/static/scripts/logScript.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBbVKx_ahhNY0PBFheQ_dH6XNssuk78zqk&callback=initMap"></script>
 {% endblock %}
