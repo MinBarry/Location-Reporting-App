@@ -5,8 +5,14 @@ var marker
 var reportsList
 var totalPages
 
+// On document load funciton
+$(function () {
+    // Request report list
+    requestReportsList(1)
+});
+
 ///////////////////////////////////////////
-// Displays reports summary list on page
+// Request reports list
 ///////////////////////////////////////////
 function requestReportsList(page) {
     $(".pagination").empty()
@@ -17,7 +23,7 @@ function requestReportsList(page) {
             totalPages = data.pages
             displayReports(reportsList)
             setPagination(totalPages, page)
-            // Show report details when a report is clicked 
+            // Attach a function to Show report details when a report is clicked 
             $(".singleReport").click(function () {
                 $(".reportDetail").hide()
                 latlng = getLatLng($(this).attr("id"), reportsList)
@@ -63,7 +69,7 @@ function displayReports(reports) {
 }
 
 ///////////////////////////////////////////
-// Create pageination 
+// Create page chanhe panel
 ///////////////////////////////////////////
 function setPagination(numPages, currentPage) {
     $(".pagination").empty()
@@ -116,7 +122,3 @@ function initMap() {
     $("#map").hide()
 }
 
-$(function () {
-    // Request report list
-    requestReportsList(1)
-});

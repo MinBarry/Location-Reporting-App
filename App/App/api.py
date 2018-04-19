@@ -46,7 +46,9 @@ def create_report():
 @app.route('/api/reports', methods = ['GET'])
 def get_reports_list():
     # TODO: Authorize admin
-    # TODO: pagination
+    
+    #TODO: search
+    # Set ddefault page parameters
     page = 1   
     perpage = 20
     if request.args and 'page' in request.args:
@@ -59,7 +61,7 @@ def get_reports_list():
         reportslist.append(report.jsonify())
     return jsonify({'reports': reportslist, 'pages':reports.pages})
 
-# Route to get single report
+# Route to get single report by id
 @app.route('/api/reports/<int:id>', methods = ['GET'])
 def get_report(id):
     # TODO: Authorize admin
