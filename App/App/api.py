@@ -1,4 +1,5 @@
 from flask import json, jsonify, request, abort, make_response
+from math import acos, asin, atan2, cos, sin, radians, degrees
 import datetime 
 from App import app, db
 from App.models import Report, User
@@ -107,7 +108,36 @@ def not_found(error):
 
 def save_image(imagedata, date, user_id):
     imagepath = None
-    # generate key and save image
+    # TODO: generate key and save image
     return imagepath
 
+# Calculates distnace from two points in km
+def distance(fromLat, fromLng, toLat, toLng):
+    distance = 6371 * acos (
+          cos(radians(fromLat)) * cos(radians( toLat ))
+          * cos(radians(toLng) - radians(fromLng))
+          + sin(radians(fromLat)) * sin(radians(toLat))
+        )
+    return distance
 
+# Calculate bound box for an area around a point
+def bound(lat, lng, distance):
+    return {'N': destination(lat,lng, 0, distance),
+            'E': destination(lat,lng, 90, distance),
+            'S': destination(lat,lng, 180, distance),
+            'W': destination(lat,lng, 270, distance)}
+
+# Helper function to find bounds
+def destination(fromLat, fromLng, bearing, distance):
+    radius = 6371
+    rlat = radians(fromLat)
+    rlng = radians(fromLng)
+    rbearing = radians(bearing)
+    angDist = distance / radius
+
+    rlat2 = asin(sin(rlat) * cos(angDist) + 
+                 cos(rlat) * sin(angDist) * cos(rbearing))
+    rlng2 = rlng + atan2(sin(rbearing) * sin(angDist) * cos(rlat),
+                         cos(angDist) - sin(rlat) * sin(rlat2))
+
+    return {'lat': degrees(rlat2), 'lng': degrees(rlng2)}

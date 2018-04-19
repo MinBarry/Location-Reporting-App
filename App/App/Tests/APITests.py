@@ -2,6 +2,7 @@ import unittest
 import tempfile
 import os
 import App
+from App import api
 from flask import json
 
 
@@ -16,7 +17,7 @@ class APITestClass(unittest.TestCase):
         os.close(self.db_fd)
         os.unlink(App.app.config['DATABASE'])
     
-    def test_report(self):
+    def test_report_routes(self):
         # Test empty query
         respone = self.app.post('/api/reports', content_type='application/json', data=json.dumps({}))
         self.assertEqual(respone.status_code,400)
@@ -103,7 +104,45 @@ class APITestClass(unittest.TestCase):
             self.assertEqual(respone.status_code,200)
             respone = self.app.get('/api/reports/'+str(ids[i]))
             self.assertEqual(respone.status_code,404)
+    
+    # TODO: test save image
 
+    def test_distnace_functions(self):
+        # test 1
+        fromLat = 44.0625
+        fromLng = -123.074117
+        toLat = 44.072748
+        toLng = -123.06936
+        distance = 20
+        dist = api.distance(fromLat, fromLng, toLat, toLng)
+        bnd = api.bound(fromLat, fromLng, distance)
+        dest = api.destination(fromLat, fromLng, 90, distance)    
+        self.assertAlmostEqual(dist, 1.2012356922377)
+        self.assertAlmostEqual(bnd['N']['lat'], 44.242364321184)
+        self.assertAlmostEqual(bnd['S']['lat'], 43.882635678816)
+        self.assertAlmostEqual(bnd['E']['lng'], -122.82381311894)
+        self.assertAlmostEqual(bnd['W']['lng'], -123.32442088106)
+        self.assertAlmostEqual(dest['lat'], 44.062226774476)
+        self.assertAlmostEqual(dest['lng'], -122.82381311894)
+        # test 2
+        fromLat = 9.791751
+        fromLng = 122.864107
+        toLat = 12.383377
+        toLng = 125.030976
+        distance = 100
+        dist = api.distance(fromLat, fromLng, toLat, toLng)
+        bnd = api.bound(fromLat, fromLng, distance)
+        dest = api.destination(fromLat, fromLng, 0, distance)    
+        self.assertAlmostEqual(dist, 372.74889595764)
+        self.assertAlmostEqual(bnd['N']['lat'], 10.691072605919)
+        self.assertAlmostEqual(bnd['S']['lat'], 8.8924293940813)
+        self.assertAlmostEqual(bnd['E']['lng'], 123.77672100788)
+        self.assertAlmostEqual(bnd['W']['lng'], 121.95149299212)
+        self.assertAlmostEqual(dest['lat'], 10.691072605919)
+        self.assertAlmostEqual(dest['lng'], 122.864107)
+        
+
+    # Helper functions
     def create_report(self, type, description, address, lat, lng, imagedata):
         return self.app.post('/api/reports', data=json.dumps({'type':type, 'description':description,
                                                              'address':address, 'lat':lat, 'lng':lng, 'imagedata':imagedata}),
