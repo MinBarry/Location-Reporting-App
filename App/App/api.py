@@ -48,15 +48,34 @@ def create_report():
 def get_reports_list():
     # TODO: Authorize admin
     
-    #TODO: search
+    #TODO: search by type, distance, user
     # Set ddefault page parameters
     page = 1   
     perpage = 20
     if request.args and 'page' in request.args:
         page = int(request.args.get('page'))
     if 'perpage' in request.args:
-        perpage = int(request.args.get('perpage'))
-    reports = Report.query.paginate(page=page, per_page=perpage, error_out=False)
+        perpage = int(request.args.get('perpage'))       
+    
+    #TODO: make efficient 
+    reports = Report.query.filter()
+    # Filter by type
+    if 'type' in request.args:
+        reports = Report.query.filter(Report.type == request.args.get('type'))
+    # Filter by distance
+    if 'distance' in request.args:
+        distance = float(request.args.get('distance'))
+        if 'lat' in request.args and 'lng' in request.args:
+            lat = float(request.args.get('lat'))
+            lng = float(request.args.get('lng'))
+        else:
+            abort(400)
+        bnd = bound(lat, lng, distance)
+        reports = Report.query.filter((Report.lat >= bnd['S']['lat']) & (Report.lat <= bnd['N']['lat'])
+                                      & (Report.lng >= bnd['W']['lng']) & (Report.lng <= bnd['E']['lng']))
+    # tODO: Filter by user
+
+    reports = reports.paginate(page=page, per_page=perpage, error_out=False)
     reportslist = []
     for report in reports.items:
         reportslist.append(report.jsonify())

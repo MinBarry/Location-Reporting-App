@@ -70,7 +70,7 @@ class APITestClass(unittest.TestCase):
         ids = []
         limit = 1000
         # create 1000 report
-        for i in range(0,limit):
+        for i in range(0, limit):
             type = "Special"
             description = "Test report"
             address = "address"
@@ -141,6 +141,80 @@ class APITestClass(unittest.TestCase):
         self.assertAlmostEqual(dest['lat'], 10.691072605919)
         self.assertAlmostEqual(dest['lng'], 122.864107)
         
+    # Test report search
+    def test_report_search(self):
+        ids = []
+        types = ["Routine","Special","Emergency"]
+        # Test type search
+        for type in types:
+            description = "Test report search"
+            address = "Bantayan - Bayawan Rd, Kabankalan, Negros Occidental, Philippines"
+            lat = "9.702727"
+            lng = "122.804295"
+            imagedata = "image data"
+            # add report
+            respone = self.create_report(type, description, address, lat, lng, imagedata)
+            self.assertNotEqual(respone.status_code,400)
+            id = json.loads(respone.data)['reports']['id']
+            ids.append(id)
+            # check if report was added
+            respone = self.app.get('/api/reports/'+str(id))
+            self.assertEqual(id , json.loads(respone.data)['reports']['id'])
+            # search for report
+            respone = self.app.get('/api/reports?perpage='+str(id+10)+'&type='+type)
+            self.assertEqual(respone.status_code,200)
+            self.assertIn(id , [ r['id'] for r in json.loads(respone.data)['reports']])
+            self.assertIn(description , [ r['description'] for r in json.loads(respone.data)['reports']])
+            # Test that other types dont appear in search result           
+            if type == "Routine":
+                self.assertNotIn("Special" , [ r['type'] for r in json.loads(respone.data)['reports']])
+                self.assertNotIn("Emergency" , [ r['type'] for r in json.loads(respone.data)['reports']])
+            elif type == "Special":
+                self.assertNotIn("Routine" , [ r['type'] for r in json.loads(respone.data)['reports']])
+                self.assertNotIn("Emergency" , [ r['type'] for r in json.loads(respone.data)['reports']])
+            elif type == "Emergency":
+                self.assertNotIn("Special" , [ r['type'] for r in json.loads(respone.data)['reports']])
+                self.assertNotIn("Routine" , [ r['type'] for r in json.loads(respone.data)['reports']])
+        
+        # Test distance search
+        # distance to test from
+        lat1 = "11.174732"
+        lng1 = "122.511834"
+        distnace1 = "20"
+        distnace2 = "100"
+        # Report info
+        description = "Test report search"
+        address = "Bantayan - Bayawan Rd, Kabankalan, Negros Occidental, Philippines"
+        imagedata = "image data"
+        # create close report
+        lat2 = "11.008530"
+        lng2 = "122.505654"       
+        respone = self.create_report(type, description, address, lat2, lng2, imagedata)
+        self.assertNotEqual(respone.status_code,400)
+        id1 = json.loads(respone.data)['reports']['id']
+        ids.append(id1)
+        # create far report
+        lat3 = "10.762730"
+        lng3 = "123.241052"
+        respone = self.create_report(type, description, address, lat3, lng3, imagedata)
+        self.assertNotEqual(respone.status_code,400)
+        id2 = json.loads(respone.data)['reports']['id']
+        ids.append(id2)
+        # search for reports within 20 km
+        respone = self.app.get('/api/reports?perpage='+str(id+10)+'&distance='+distnace1+'&lat='+lat1+'&lng='+lng1)
+        self.assertEqual(respone.status_code,200)
+        self.assertIn(id1 , [ r['id'] for r in json.loads(respone.data)['reports']])
+        self.assertNotIn(id2 , [ r['id'] for r in json.loads(respone.data)['reports']])
+        # search for reports within 100 km
+        respone = self.app.get('/api/reports?perpage='+str(id+10)+'&distance='+distnace2+'&lat='+lat1+'&lng='+lng1)
+        self.assertEqual(respone.status_code,200)
+        self.assertIn(id1 , [ r['id'] for r in json.loads(respone.data)['reports']])
+        self.assertIn(id2 , [ r['id'] for r in json.loads(respone.data)['reports']])
+
+        # TOD0: Test distnace and type search
+
+        # TODO: Test user search
+
 
     # Helper functions
     def create_report(self, type, description, address, lat, lng, imagedata):
