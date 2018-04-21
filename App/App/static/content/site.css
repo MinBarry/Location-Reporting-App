@@ -56,3 +56,13 @@ input[type="checkbox"].input-validation-error {
     justify-content: center;
     align-items: center;
 }
+
+.row {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.form-control {
+    width: auto;
+    display: inline-block;
+}

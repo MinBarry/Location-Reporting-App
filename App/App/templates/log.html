@@ -2,34 +2,57 @@
 
 {% block content %}
 
-<div>
-    <!-- TODO: Search bar -->
-    <!-- advanced search button-->
-    <!-- div where advanced options will appear-->
-</div>
-
 <h2>Reports Log</h2>
 
-<table class="table table-hover">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>User</th>
-            <th>Area</th>
-            <th>Date</th>
-            <th>Type</th>
-            <th>Description</th>
-        </tr>
-    </thead>
-    <tbody id="reportsView"></tbody>
-</table>
+<div class="row">
+      <div class="col-md-3"></div>
+        <div class="col-md-2">
+            <select class="form-control" id="sel_type">
+                <option value="Any Type">Any Type</option>
+                <option value="Special">Special</option>
+                <option value="Routine">Routine</option>
+                <option value="Emergency">Emergency</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select class="form-control" id="sel_distance">
+                <option value="0">Any Distance</option>
+                <option value="10">10km</option>
+                <option value="20">20km</option>
+                <option value="50">50km</option>
+                <option value="100">100km</option>
+            </select>
+        </div>
+    <div class="col-md-1">
+        <button type="button" class="btn btn-default" id="filter-btn">Filter</button>
+    </div>
+    <div class="col-md-4"></div>
+</div>
 
-<div class="col-sm-12">
-    <ul class="pagination">
-    
-    </ul>
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User</th>
+                    <th>Area</th>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody id="reportsView"></tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <ul class="pagination"></ul>
+    </div>
 </div>
 <div hidden id="map"></div>
-    <script src="/static/scripts/logScript.js"></script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBbVKx_ahhNY0PBFheQ_dH6XNssuk78zqk&callback=initMap"></script>
-{% endblock %}
+<script src="/static/scripts/logScript.js"></script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBbVKx_ahhNY0PBFheQ_dH6XNssuk78zqk&callback=initMap"></script>
+    {% endblock %}

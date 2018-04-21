@@ -4,20 +4,37 @@ var map
 var marker
 var reportsList
 var totalPages
+var types = ["Routine", "Emergency", "Special"]
+var selected_type
+var selected_distance
 
 // On document load funciton
 $(function () {
     // Request report list
+    $("#filter-btn").click(function () {
+        selected_type = $("#sel_type").val()
+        selected_distance = parseInt($("#sel_distance").val())
+        requestReportsList(1, selected_type, selected_distance)
+    })
     requestReportsList(1)
 });
 
 ///////////////////////////////////////////
 // Request reports list
 ///////////////////////////////////////////
-function requestReportsList(page) {
+function requestReportsList(page, type, distance) {
+    url = "/api/reports?perpage=20&page=" + page
+    if (types.includes(type)) {
+        console.log("setting type")
+        url = url + "&type="+ type 
+    }
+    if (distance >= 10) {
+        console.log("setting dis")
+        url = url + "&distance=" + distance
+    }
     $(".pagination").empty()
     $("#reportsView").empty()
-    $.getJSON($SCRIPT_ROOT + '/api/reports?perpage=20&page='+ page,
+    $.getJSON($SCRIPT_ROOT + url,
         function (data, status_code) {
             reportsList = data.reports
             totalPages = data.pages
@@ -29,7 +46,6 @@ function requestReportsList(page) {
                 latlng = getLatLng($(this).attr("id"), reportsList)
                 map.setCenter(latlng)
                 marker.setPosition(latlng)
-                console.log(map.center)
                 $(this).next().show();
                 $(this).next().find(".reportMap").append(map.getDiv())
                 $("#map").show()
@@ -69,7 +85,7 @@ function displayReports(reports) {
 }
 
 ///////////////////////////////////////////
-// Create page chanhe panel
+// Create page panel
 ///////////////////////////////////////////
 function setPagination(numPages, currentPage) {
     $(".pagination").empty()
@@ -81,9 +97,18 @@ function setPagination(numPages, currentPage) {
         }              
     }
     $(".pagination").children().click(function () {
-        console.log("clicked page num")
-        requestReportsList($(this).text())
+        requestReportsList($(this).text(), selected_type, selected_distance)
     })
+}
+
+///////////////////////////////////////////
+// Search
+///////////////////////////////////////////
+function search() {
+    type = $("#sel_type").text()
+    distance = $("#sel_distance").text()
+    console.log(type)
+    console.log(distance)
 }
 ///////////////////////////////////////////
 // Requests user info from the server
