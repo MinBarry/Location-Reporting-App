@@ -1,4 +1,5 @@
 from flask import json, jsonify, request, abort, make_response
+from flask_security import login_required, current_user
 from math import acos, asin, atan2, cos, sin, radians, degrees
 import datetime 
 from App import app, db
@@ -45,11 +46,10 @@ def create_report():
     
 # Route to get reports list
 @app.route('/api/reports', methods = ['GET'])
+@login_required
 def get_reports_list():
-    # TODO: Authorize admin
-    
-    #TODO: search by type, distance, user
-    # Set ddefault page parameters
+    if not current_user.has_role('admin') and not current_user.has_role('super'):
+        abort(403)
     page = 1   
     perpage = 20
     if request.args and 'page' in request.args:
@@ -73,7 +73,7 @@ def get_reports_list():
         bnd = bound(lat, lng, distance)
         reports = Report.query.filter((Report.lat >= bnd['S']['lat']) & (Report.lat <= bnd['N']['lat'])
                                       & (Report.lng >= bnd['W']['lng']) & (Report.lng <= bnd['E']['lng']))
-    # tODO: Filter by user
+    # TODO: Filter by user
 
     reports = reports.paginate(page=page, per_page=perpage, error_out=False)
     reportslist = []
@@ -83,8 +83,10 @@ def get_reports_list():
 
 # Route to get single report by id
 @app.route('/api/reports/<int:id>', methods = ['GET'])
+@login_required
 def get_report(id):
-    # TODO: Authorize admin
+    if not current_user.has_role('admin') and not current_user.has_role('super'):
+        abort(403)
     report = Report.query.get(id)
     if not report:
         abort(404)
@@ -92,8 +94,10 @@ def get_report(id):
 
 # Route to delete reports
 @app.route('/api/reports', methods = ['DELETE'])
+@login_required
 def delete_report():
-    # TODO: Authorize admin
+    if not current_user.has_role('admin') and not current_user.has_role('super'):
+        abort(403)
     if not request.json or not 'id' in request.json:
         abort(400)
     id = request.json.get('id')
@@ -109,8 +113,6 @@ def delete_report():
         abort(400)
     return jsonify(success)
 
-# TODO: Route to admin login 
-
 # TODO: Route to send emails to users
 
 # Error handeling 
@@ -121,7 +123,10 @@ def not_found(error):
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': 'Not Found'}), 404)
-
+ 
+@app.errorhandler(403)
+def not_found(error):
+    return make_response(jsonify({'error': 'Forbidden'}), 403)
 
 # Helper Functions
 

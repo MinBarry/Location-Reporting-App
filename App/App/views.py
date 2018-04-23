@@ -3,22 +3,17 @@ Routes and views for the flask application.
 """
 
 from datetime import datetime
-from flask import render_template
+from flask import redirect, url_for, render_template, abort
+from flask_security import login_required, roles_required, roles_accepted, current_user
 from App import app
 
 @app.route('/')
-@app.route('/home')
+@login_required
 def home():
-    """Renders the home page."""
-    return render_template(
-        'index.html',
-        title='Login',
-        year=datetime.now().year,
-    )
-
-@app.route('/log')
-def log():
-    return render_template(
-        'log.html',
-        year=datetime.now().year,
-        title='Reports Log')
+    if current_user.has_role('admin') or current_user.has_role('super'):
+        return render_template(
+            'log.html',
+            year=datetime.now().year,
+            title='Reports Log')
+    else:
+        abort(401)

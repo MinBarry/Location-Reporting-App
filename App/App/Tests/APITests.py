@@ -1,24 +1,39 @@
 import unittest
 import tempfile
 import os
-import App
-from App import api
+from App import api, app, db, user_datastore, security
 from flask import json
+from flask_security.utils import login_user
 
 
 class APITestClass(unittest.TestCase):
     def setUp(self):
-        self.db_fd, App.app.config['DATABASE'] = tempfile.mkstemp()
-        App.app.config['TESTING'] = True
-        self.app = App.app.test_client()
-        App.init_db()
+        app.config['TESTING'] = True
+        app.config['LOGIN_DISABLED'] = True  
+        app.config['DEBUG'] = False
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///temp.db'
+        app.config['SECRET_KEY'] = 'super-secret'
+        app.config['SECURITY_PASSWORD_SALT'] = 'super-secret'
+        self.app = app.test_client()    
+        db.drop_all()
+        db.create_all()
+        user_datastore.create_role(name='super', description='Can create admin users')
+        user_datastore.create_role(name='admin', description='Can view reports log')
+        user_datastore.create_role(name='user', description='Can create reports')
+        user_datastore.create_user(email='test@test.net', password='password')
+        user_datastore.create_user(email='admin@test.net', password='password')
+        user_datastore.create_user(email='user@test.net', password='password')
+        user_datastore.add_role_to_user('test@test.net', 'super')
+        user_datastore.add_role_to_user('admin@test.net', 'admin')
+        user_datastore.add_role_to_user('user@test.net', 'user')   
+        db.session.commit()
 
     def tearDown(self):
-        os.close(self.db_fd)
-        os.unlink(App.app.config['DATABASE'])
-    
+        pass
+           
     def test_report_routes(self):
         # Test empty query
+        
         respone = self.app.post('/api/reports', content_type='application/json', data=json.dumps({}))
         self.assertEqual(respone.status_code,400)
        
@@ -34,6 +49,7 @@ class APITestClass(unittest.TestCase):
         id = json.loads(respone.data)['reports']['id']
 
         # Check if report is in the database
+        self.login('test@test.net','password')
         respone = self.app.get('/api/reports?page=1&perpage=200')
         self.assertEqual(respone.status_code,200)
         self.assertIn(id , [ r['id'] for r in json.loads(respone.data)['reports']])
@@ -214,13 +230,18 @@ class APITestClass(unittest.TestCase):
         # TOD0: Test distnace and type search
 
         # TODO: Test user search
-
+        # TODO: delete reports
 
     # Helper functions
     def create_report(self, type, description, address, lat, lng, imagedata):
         return self.app.post('/api/reports', data=json.dumps({'type':type, 'description':description,
                                                              'address':address, 'lat':lat, 'lng':lng, 'imagedata':imagedata}),
                             content_type='application/json')
+    def login(self, username, password):
+        return self.app.post('/login', data=dict(username=username,password=password), follow_redirects=True)
+
+    def logout(self):
+        return self.app.get('/logout', follow_redirects=True)
 
 if __name__ == '__main__':
     unittest.main()
