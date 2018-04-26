@@ -14,6 +14,7 @@ app.config.from_object(Config)
 #TODO: Change secert keys
 app.config['SECRET_KEY'] = 'super-secret'
 app.config['SECURITY_PASSWORD_SALT'] = 'super-secret'
+app.config['WTF_CSRF_ENABLED'] = False
 #app.config['SECURITY_REGISTERABLE'] = True
 
 # Setting Databse
