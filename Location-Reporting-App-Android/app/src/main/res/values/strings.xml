@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Location-Reporting-App-Android</string>
+    <string name="app_name">Location Reporting App</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -23,4 +23,13 @@
 
     <string name="title_activity_main">MainActivity</string>
     <string name="host_url">http://10.0.2.2/58270</string>
+
+    <string-array name="planets_array">
+        <item>Other</item>
+        <item>Flood</item>
+        <item>Fire</item>
+        <item>Road Accident</item>
+        <item>Burglary</item>
+        <item>Violence</item>
+    </string-array>
 </resources>

@@ -1,5 +1,6 @@
 package minna.location_reporting_app_android;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -21,7 +22,9 @@ public class MainActivity extends AppCompatActivity {
         mSignout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                //TODO: remove token
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
             }
 
         });
@@ -29,7 +32,8 @@ public class MainActivity extends AppCompatActivity {
         mEditAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(MainActivity.this, EditAccountActivity.class);
+                startActivity(intent);
             }
 
         });
@@ -37,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
         mNewReport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(MainActivity.this, NewReportActivity.class);
+                startActivity(intent);
             }
 
         });
