@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,7 +10,9 @@
     <ScrollView
         android:id="@+id/newReportForm"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp">
 
         <LinearLayout
             android:id="@+id/formLayout"
@@ -20,55 +23,8 @@
             <TextView
                 android:id="@+id/error"
                 android:layout_width="match_parent"
-                android:layout_height="90dp"
+                android:layout_height="32dp"
                 android:text="TextView" />
-
-            <TextView
-                android:id="@+id/typeLable"
-                android:layout_width="310dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginLeft="8dp"
-                android:text="Type:"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
-
-            <RadioGroup
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="8dp">
-
-                <RadioButton
-                    android:id="@+id/optionRoutine"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Routine"
-                    android:onClick="onRadioButtonClicked"/>
-
-                <RadioButton
-                    android:id="@+id/optionEmergency"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Emergency"
-                    android:onClick="onRadioButtonClicked"/>
-
-                <RadioButton
-                    android:id="@+id/optionSpecial"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Special"
-                    android:onClick="onRadioButtonClicked"/>
-            </RadioGroup>
-
-            <Spinner
-                android:id="@+id/spinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:visibility="invisible" />
 
             <ScrollView
                 android:id="@+id/descriptionForm"
@@ -91,6 +47,7 @@
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="10dp"
                         android:ems="10"
+                        android:freezesText="true"
                         android:hint="Description"
                         android:inputType="textMultiLine"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -99,11 +56,52 @@
                 </LinearLayout>
             </ScrollView>
 
-            <com.google.android.gms.maps.MapView
-                android:id="@+id/mapView"
+            <TextView
+                android:id="@+id/typeLable"
+                android:layout_width="310dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Type:"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="8dp">
+
+                <RadioButton
+                    android:id="@+id/optionRoutine"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="onRadioButtonClicked"
+                    android:text="Routine" />
+
+                <RadioButton
+                    android:id="@+id/optionEmergency"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="onRadioButtonClicked"
+                    android:text="Emergency" />
+
+                <RadioButton
+                    android:id="@+id/optionSpecial"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="onRadioButtonClicked"
+                    android:text="Special" />
+            </RadioGroup>
+
+            <Spinner
+                android:id="@+id/spinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp" />
+                android:layout_marginTop="8dp"
+                android:visibility="invisible" />
 
             <LinearLayout
                 android:id="@+id/mapButtons"

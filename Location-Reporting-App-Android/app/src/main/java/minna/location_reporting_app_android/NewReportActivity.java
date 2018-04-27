@@ -21,7 +21,6 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,11 +32,15 @@ public class NewReportActivity extends AppCompatActivity {
     private TextView descriptionView;
     private View formView;
     private TextView errorView;
+    double lat;
+    double lng;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_report);
+        //init values
         selectedType="";
         descriptionView = (TextView)  findViewById(R.id.description);
         formView = (View) findViewById(R.id.newReportForm);
@@ -51,9 +54,19 @@ public class NewReportActivity extends AppCompatActivity {
         // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
         spinner.setVisibility(View.INVISIBLE);
+
         //TODO: get auth_token
-        //TODO: setup maps
-        //TODO: set get current location
+
+        // Setup get current location button
+        Button getLocatoion = (Button) findViewById(R.id.currentLocation);
+        getLocatoion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(NewReportActivity.this, MapsActivity.class);
+                startActivityForResult(intent, 1);
+            }
+        });
+
         //TODO: set qr code
         //TODO: get selected type
         //TODO: set add picture
@@ -85,9 +98,13 @@ public class NewReportActivity extends AppCompatActivity {
                 String newDesc = "Emergency Type: "+spinner.getSelectedItem().toString()+" "+description;
                 description = newDesc;
         }
-        //TODO: set lat and lng
-        String lat = "";
-        String lng="";
+        if(lat == 0 || lng == 0){
+            errorView.setText("You must specify your location");
+            return false;
+        }
+        errorView.setText(lat+" "+lng);
+        String latString = ""+lat;
+        String lngString = ""+lng;
         //TODO: set address
         String address="";
         //TODO: set image data
@@ -96,7 +113,7 @@ public class NewReportActivity extends AppCompatActivity {
         String userid="";
         //TODO: set auth_token
         String auth_token = "";
-        submitReportRequest(type, description,address,lat,lng,image,userid,auth_token);
+        submitReportRequest(type, description,address,latString,lngString,image,userid,auth_token);
         return true;
     }
 
@@ -178,4 +195,20 @@ public class NewReportActivity extends AppCompatActivity {
         TextView mtextView = findViewById(R.id.error);
         mtextView.setText("type = "+selectedType+"\n");
     }
+
+    // Result from MapsActivity
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 1) {
+            if(resultCode == NewReportActivity.RESULT_OK){
+                lat = data.getDoubleExtra("lat", 0);
+                lng = data.getDoubleExtra("lng", 0);
+            }
+
+            if (resultCode == NewReportActivity.RESULT_CANCELED) {
+                //TODO: handle
+            }
+        }
+    }//onActivityResult
 }
