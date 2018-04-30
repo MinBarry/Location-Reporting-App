@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -53,6 +54,7 @@ import static android.Manifest.permission.READ_CONTACTS;
 /**
  * A login screen that offers login via email/password.
  */
+//TODO: make singleton request queue
 public class LoginActivity extends AppCompatActivity{
 
 
@@ -61,17 +63,27 @@ public class LoginActivity extends AppCompatActivity{
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    SharedPreferences.Editor mEditor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // TODO: check if user is logged in and move to main activity
+        //check if user is logged in and move to main activity
+        SharedPreferences mSharedPreferences = getSharedPreferences(getString(R.string.pref_name), MODE_PRIVATE);
+        mEditor = mSharedPreferences.edit();
+        if(mSharedPreferences.contains(getString(R.string.token_key))){
+            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+        }
         setContentView(R.layout.activity_login);
         // Set up the login form.
         mEmailView = (EditText) findViewById(R.id.email);
         mPasswordView = (EditText) findViewById(R.id.password);
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
 
+        //TODO: remove
+        mEditor.putString(getString(R.string.token_key),"token-token");
+        mEditor.putString(getString(R.string.user_key), "22");
+        mEditor.apply();
         Intent mainIntent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(mainIntent);
 
@@ -85,6 +97,7 @@ public class LoginActivity extends AppCompatActivity{
                 if(isEmailValid(email)&& isPasswordValid(password)){
                     //TOD: change to singleton queue
                     RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
+                    //TODO: use resource strring
                     String url = "http://10.0.2.2:58270/login";
                     Map<String, String> jsonparams = new HashMap<String, String>();
                     jsonparams.put("email", email);
@@ -164,11 +177,13 @@ public class LoginActivity extends AppCompatActivity{
                     public void onResponse(JSONObject response) {
                         try {
                             String token = response.getJSONObject("response").getJSONObject("user").getString("authentication_token");
-                            if(token.length()>0){
-                                // TODO: save token with account manager
-                                // TODO: move to next page
-                                Intent mainIntent = new Intent(LoginActivity.this, MainActivity.class);
-                                startActivity(mainIntent);
+                            String userid = response.getJSONObject("response").getJSONObject("user").getString("user_id");
+                            if(token.length() > 0 && userid.length() > 0){
+                                mEditor.putString(getString(R.string.token_key), token);
+                                mEditor.putString(getString(R.string.user_key), userid);
+                                mEditor.apply();
+
+                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
                             }
 
 

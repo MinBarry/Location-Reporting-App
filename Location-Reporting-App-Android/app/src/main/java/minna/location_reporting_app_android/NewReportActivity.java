@@ -1,6 +1,7 @@
 package minna.location_reporting_app_android;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -32,8 +33,10 @@ public class NewReportActivity extends AppCompatActivity {
     private TextView descriptionView;
     private View formView;
     private TextView errorView;
-    double lat;
-    double lng;
+    private double lat;
+    private double lng;
+    private String auth_token;
+    private String user_id;
 
 
     @Override
@@ -56,6 +59,13 @@ public class NewReportActivity extends AppCompatActivity {
         spinner.setVisibility(View.INVISIBLE);
 
         //TODO: get auth_token
+        SharedPreferences mSharedPreferences = getSharedPreferences(getString(R.string.pref_name), MODE_PRIVATE);
+        if(!mSharedPreferences.contains(getString(R.string.token_key))){
+            startActivity(new Intent(NewReportActivity.this, LoginActivity.class));
+        }
+        auth_token = mSharedPreferences.getString(getString(R.string.token_key),"");
+        user_id = mSharedPreferences.getString(getString(R.string.user_key),"");
+        errorView.setText(user_id+" "+auth_token);
 
         // Setup get current location button
         Button getLocatoion = (Button) findViewById(R.id.currentLocation);
@@ -68,7 +78,6 @@ public class NewReportActivity extends AppCompatActivity {
         });
 
         //TODO: set qr code
-        //TODO: get selected type
         //TODO: set add picture
 
         final Button submit = (Button) findViewById(R.id.submit);
@@ -105,20 +114,23 @@ public class NewReportActivity extends AppCompatActivity {
         errorView.setText(lat+" "+lng);
         String latString = ""+lat;
         String lngString = ""+lng;
+
         //TODO: set address
         String address="";
         //TODO: set image data
         String image = "";
-        //TODO: set userid
-        String userid="";
-        //TODO: set auth_token
-        String auth_token = "";
-        submitReportRequest(type, description,address,latString,lngString,image,userid,auth_token);
+
+        if (auth_token.length()==0 || user_id.length()==0) {
+            errorView.setText("not logged in properly");
+            return false;
+        }
+        submitReportRequest(type, description,address,latString,lngString,image,user_id,auth_token);
         return true;
     }
 
     private void submitReportRequest(String type, String desc, String address, String lat, String lng, String image, String userid, String auth_token){
         RequestQueue queue = Volley.newRequestQueue(NewReportActivity.this);
+        //TODO: use resource string
         String url = R.string.host_url+"/Report";
         Map<String, String> jsonparams = new HashMap<String, String>();
         jsonparams.put("type", type);
