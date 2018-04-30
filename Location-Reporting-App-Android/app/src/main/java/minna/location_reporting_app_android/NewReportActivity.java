@@ -37,12 +37,14 @@ public class NewReportActivity extends AppCompatActivity {
     private double lng;
     private String auth_token;
     private String user_id;
+    private RequestQueue mQueue;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_report);
+        mQueue = Singleton.getInstance(this.getApplicationContext()).getRequestQueue();
         //init values
         selectedType="";
         descriptionView = (TextView)  findViewById(R.id.description);
@@ -129,9 +131,8 @@ public class NewReportActivity extends AppCompatActivity {
     }
 
     private void submitReportRequest(String type, String desc, String address, String lat, String lng, String image, String userid, String auth_token){
-        RequestQueue queue = Volley.newRequestQueue(NewReportActivity.this);
         //TODO: use resource string
-        String url = R.string.host_url+"/Report";
+        String url = getString(R.string.host_url)+"/api/reports";
         Map<String, String> jsonparams = new HashMap<String, String>();
         jsonparams.put("type", type);
         jsonparams.put("description",desc);
@@ -139,9 +140,9 @@ public class NewReportActivity extends AppCompatActivity {
         jsonparams.put("lat",lat);
         jsonparams.put("lng",lng);
         jsonparams.put("image",image);
-        jsonparams.put("userid", userid);
+        jsonparams.put("user_id", userid);
         JsonObjectRequest jsonObjectRequest = createReportRequest(url, jsonparams, auth_token);
-        queue.add(jsonObjectRequest);
+        mQueue.add(jsonObjectRequest);
     }
 
     private JsonObjectRequest createReportRequest(String url, Map<String, String> jsonparams, final String auth_token) {
@@ -149,24 +150,16 @@ public class NewReportActivity extends AppCompatActivity {
                 (Request.Method.POST, url, new JSONObject(jsonparams), new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        try {
-                            String token = response.getString("response");
-                            if(token.length()>0){
-                                // TODO: show success message
-                                // TODO: move to next page
-                                Intent mainIntent = new Intent(NewReportActivity.this, MainActivity.class);
-                                startActivity(mainIntent);
-                            }
-
-                        } catch (JSONException e) {
-                            //TODO: handle exception
-                        }
+                        //String token = response.getString("response");
+                        //TODO: alert success
+                        startActivity(new Intent(NewReportActivity.this, MainActivity.class));
                     }
                 }, new Response.ErrorListener() {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // TODO: Handle error
+                        errorView.setText(error.toString());
                         formView.setVisibility(View.VISIBLE);
                     }
                 }) {

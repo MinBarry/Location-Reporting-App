@@ -25,7 +25,7 @@
     <string name="option_emergency">Emergency</string>
 
     <string name="title_activity_main">MainActivity</string>
-    <string name="host_url">http://10.0.2.2/58270</string>
+    <string name="host_url">http://10.0.2.2:54599</string>
 
     <string-array name="planets_array">
         <item>Other</item>

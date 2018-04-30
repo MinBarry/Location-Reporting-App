@@ -64,6 +64,7 @@ public class LoginActivity extends AppCompatActivity{
     private View mProgressView;
     private View mLoginFormView;
     SharedPreferences.Editor mEditor;
+    RequestQueue mQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,13 +80,13 @@ public class LoginActivity extends AppCompatActivity{
         mEmailView = (EditText) findViewById(R.id.email);
         mPasswordView = (EditText) findViewById(R.id.password);
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-
+        mQueue = Singleton.getInstance(this.getApplicationContext()).getRequestQueue();
         //TODO: remove
-        mEditor.putString(getString(R.string.token_key),"token-token");
-        mEditor.putString(getString(R.string.user_key), "22");
-        mEditor.apply();
-        Intent mainIntent = new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(mainIntent);
+       // mEditor.putString(getString(R.string.token_key),"token-token");
+      //  mEditor.putString(getString(R.string.user_key), "22");
+       // mEditor.apply();
+        //Intent mainIntent = new Intent(LoginActivity.this, MainActivity.class);
+      //  startActivity(mainIntent);
 
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -96,14 +97,12 @@ public class LoginActivity extends AppCompatActivity{
                 String password = mPasswordView.getText().toString();
                 if(isEmailValid(email)&& isPasswordValid(password)){
                     //TOD: change to singleton queue
-                    RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
-                    //TODO: use resource strring
-                    String url = "http://10.0.2.2:58270/login";
+                    String url = getString(R.string.host_url)+"/login";
                     Map<String, String> jsonparams = new HashMap<String, String>();
                     jsonparams.put("email", email);
                     jsonparams.put("password",password);
                     JsonObjectRequest jsonObjectRequest = createLoginRequest(url, jsonparams);
-                    queue.add(jsonObjectRequest);
+                    mQueue.add(jsonObjectRequest);
                 }else{
                     showProgress(false);
                 }
@@ -177,7 +176,7 @@ public class LoginActivity extends AppCompatActivity{
                     public void onResponse(JSONObject response) {
                         try {
                             String token = response.getJSONObject("response").getJSONObject("user").getString("authentication_token");
-                            String userid = response.getJSONObject("response").getJSONObject("user").getString("user_id");
+                            String userid = response.getJSONObject("response").getJSONObject("user").getString("id");
                             if(token.length() > 0 && userid.length() > 0){
                                 mEditor.putString(getString(R.string.token_key), token);
                                 mEditor.putString(getString(R.string.user_key), userid);
@@ -185,8 +184,6 @@ public class LoginActivity extends AppCompatActivity{
 
                                 startActivity(new Intent(LoginActivity.this, MainActivity.class));
                             }
-
-
                         } catch (JSONException e) {
                             showProgress(false);
                             //TODO: remove
@@ -199,7 +196,6 @@ public class LoginActivity extends AppCompatActivity{
                         mtextView.setText("Response: " + response.toString());
                     }
                 }, new Response.ErrorListener() {
-
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // TODO: Handle error

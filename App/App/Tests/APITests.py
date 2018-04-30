@@ -169,7 +169,7 @@ class APITestClass(unittest.TestCase):
             lng = "122.804295"
             imagedata = "image data"
             # add report
-            respone = self.create_report(type, description, address, lat, lng, imagedata)
+            respone = self.create_report(type, description, address, lat, lng, imagedata, 1)
             self.assertNotEqual(respone.status_code,400)
             id = json.loads(respone.data)['reports']['id']
             ids.append(id)
@@ -205,7 +205,7 @@ class APITestClass(unittest.TestCase):
         # create close report
         lat2 = "11.008530"
         lng2 = "122.505654"       
-        respone = self.create_report(type, description, address, lat2, lng2, imagedata)
+        respone = self.create_report(type, description, address, lat2, lng2, imagedata, 1)
         self.assertNotEqual(respone.status_code,400)
         id1 = json.loads(respone.data)['reports']['id']
         ids.append(id1)
@@ -233,8 +233,8 @@ class APITestClass(unittest.TestCase):
         # TODO: delete reports
 
     # Helper functions
-    def create_report(self, type, description, address, lat, lng, imagedata):
-        return self.app.post('/api/reports', data=json.dumps({'type':type, 'description':description,
+    def create_report(self, type, description, address, lat, lng, imagedata, userid):
+        return self.app.post('/api/reports', data=json.dumps({'type':type, 'description':description, 'user_id': userid,
                                                              'address':address, 'lat':lat, 'lng':lng, 'imagedata':imagedata}),
                             content_type='application/json')
     def login(self, username, password):
