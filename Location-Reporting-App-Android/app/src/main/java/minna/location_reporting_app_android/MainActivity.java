@@ -1,5 +1,7 @@
 package minna.location_reporting_app_android;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,11 +13,26 @@ import android.view.View;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // check if user is logged in
+        //TODO: validate token
+        final UserSession session = new UserSession(this);
+        if(!session.isUserLoggedIn()) {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+            alertDialogBuilder.setMessage("Your session has ended, please log in again.");
+            alertDialogBuilder.setPositiveButton("Ok",
+                    new DialogInterface.OnClickListener(){
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                        }
+                    });
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+        }
         Button mSignout = (Button) findViewById(R.id.signout);
         final Button mEditAccount = (Button) findViewById(R.id.editAccount);
         Button mNewReport = (Button) findViewById(R.id.newReport);
@@ -23,13 +40,9 @@ public class MainActivity extends AppCompatActivity {
         mSignout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences mSharedPreferences = getSharedPreferences(getString(R.string.pref_name), MODE_PRIVATE);
-                SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-                mEditor.remove(getString(R.string.token_key));
-                mEditor.apply();
+                session.logUserOut();
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
             }
-
         });
 
         mEditAccount.setOnClickListener(new View.OnClickListener() {

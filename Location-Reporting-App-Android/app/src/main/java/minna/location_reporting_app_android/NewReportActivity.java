@@ -1,7 +1,8 @@
 package minna.location_reporting_app_android;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -27,47 +29,50 @@ import java.util.Map;
 
 public class NewReportActivity extends AppCompatActivity {
 
-    private String selectedType;
-    private String selectedDescription;
-    private Spinner spinner;
-    private TextView descriptionView;
-    private View formView;
-    private TextView errorView;
+    private String mSelectedType;
+    private String mSelectedDescription;
+    private Spinner mSpinner;
+    private TextView mDescriptionView;
+    private View mFormView;
+    private TextView mErrorView;
     private double lat;
     private double lng;
     private String auth_token;
     private String user_id;
     private RequestQueue mQueue;
+    private UserSession mSession;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_report);
+        // TODO: check if token exists and is valid
+        mSession = new UserSession(this);
+        if(!mSession.isUserLoggedIn()){
+            startActivity(new Intent(NewReportActivity.this, LoginActivity.class));
+        }
+
         mQueue = Singleton.getInstance(this.getApplicationContext()).getRequestQueue();
-        //init values
-        selectedType="";
-        descriptionView = (TextView)  findViewById(R.id.description);
-        formView = (View) findViewById(R.id.newReportForm);
-        errorView = (TextView)findViewById(R.id.error);
-        spinner = (Spinner) findViewById(R.id.spinner);
+        mSelectedType="";
+        mDescriptionView = (TextView)  findViewById(R.id.description);
+        mFormView = (View) findViewById(R.id.newReportForm);
+        mErrorView = (TextView)findViewById(R.id.error);
+        mSpinner = (Spinner) findViewById(R.id.spinner);
+
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.planets_array, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
-        spinner.setVisibility(View.INVISIBLE);
+        mSpinner.setAdapter(adapter);
+        mSpinner.setVisibility(View.INVISIBLE);
 
-        //TODO: get auth_token
-        SharedPreferences mSharedPreferences = getSharedPreferences(getString(R.string.pref_name), MODE_PRIVATE);
-        if(!mSharedPreferences.contains(getString(R.string.token_key))){
-            startActivity(new Intent(NewReportActivity.this, LoginActivity.class));
-        }
-        auth_token = mSharedPreferences.getString(getString(R.string.token_key),"");
-        user_id = mSharedPreferences.getString(getString(R.string.user_key),"");
-        errorView.setText(user_id+" "+auth_token);
+        auth_token = mSession.getToken();
+        user_id = mSession.getUserId();
+
+        mErrorView.setText(user_id+" "+auth_token);
 
         // Setup get current location button
         Button getLocatoion = (Button) findViewById(R.id.currentLocation);
@@ -86,9 +91,9 @@ public class NewReportActivity extends AppCompatActivity {
         submit.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                formView.setVisibility(View.INVISIBLE);
+                mFormView.setVisibility(View.INVISIBLE);
                 if(!submitReport()) {
-                    formView.setVisibility(View.VISIBLE);
+                    mFormView.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -96,24 +101,24 @@ public class NewReportActivity extends AppCompatActivity {
     }
     // sets report data, checks if they are valid and submits report request
     private boolean submitReport(){
-        String type = selectedType;
-        if(selectedType.length()<1){
-            errorView.setText("You must select a type");
+        String type = mSelectedType;
+        if(mSelectedType.length()<1){
+            mErrorView.setText("You must select a type");
             return false;
         }
-        String description = descriptionView.getText().toString();
+        String description = mDescriptionView.getText().toString();
         if (description.length()<1 || description.length()>200) {
-            errorView.setText("Description must be between 1 and 200 characters");
+            mErrorView.setText("Description must be between 1 and 200 characters");
         }
-        if(selectedType.equals(getString(R.string.option_emergency))){
-                String newDesc = "Emergency Type: "+spinner.getSelectedItem().toString()+" "+description;
+        if(mSelectedType.equals(getString(R.string.option_emergency))){
+                String newDesc = "Emergency Type: "+mSpinner.getSelectedItem().toString()+" "+description;
                 description = newDesc;
         }
         if(lat == 0 || lng == 0){
-            errorView.setText("You must specify your location");
+            mErrorView.setText("You must specify your location");
             return false;
         }
-        errorView.setText(lat+" "+lng);
+        mErrorView.setText(lat+" "+lng);
         String latString = ""+lat;
         String lngString = ""+lng;
 
@@ -123,7 +128,7 @@ public class NewReportActivity extends AppCompatActivity {
         String image = "";
 
         if (auth_token.length()==0 || user_id.length()==0) {
-            errorView.setText("not logged in properly");
+            mErrorView.setText("not logged in properly");
             return false;
         }
         submitReportRequest(type, description,address,latString,lngString,image,user_id,auth_token);
@@ -131,7 +136,6 @@ public class NewReportActivity extends AppCompatActivity {
     }
 
     private void submitReportRequest(String type, String desc, String address, String lat, String lng, String image, String userid, String auth_token){
-        //TODO: use resource string
         String url = getString(R.string.host_url)+"/api/reports";
         Map<String, String> jsonparams = new HashMap<String, String>();
         jsonparams.put("type", type);
@@ -152,15 +156,41 @@ public class NewReportActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         //String token = response.getString("response");
                         //TODO: alert success
-                        startActivity(new Intent(NewReportActivity.this, MainActivity.class));
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(NewReportActivity.this);
+                        alertDialogBuilder.setMessage("Your report has been submitted");
+                        alertDialogBuilder.setPositiveButton("Ok",
+                                new DialogInterface.OnClickListener(){
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        startActivity(new Intent(NewReportActivity.this, MainActivity.class));
+                                    }
+                                });
+                        AlertDialog alertDialog = alertDialogBuilder.create();
+                        alertDialog.show();
+
                     }
                 }, new Response.ErrorListener() {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // TODO: Handle error
-                        errorView.setText(error.toString());
-                        formView.setVisibility(View.VISIBLE);
+                        if(error instanceof AuthFailureError){
+                            //TODO: set alert
+                            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(NewReportActivity.this);
+                            alertDialogBuilder.setMessage("Your session has ended, please log in again.");
+                            alertDialogBuilder.setPositiveButton("Ok",
+                                    new DialogInterface.OnClickListener(){
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            startActivity(new Intent(NewReportActivity.this, LoginActivity.class));
+                                        }
+                                    });
+                            AlertDialog alertDialog = alertDialogBuilder.create();
+                            alertDialog.show();
+                            mSession.logUserOut();
+                        }
+                        mErrorView.setText(error.toString());
+                        mFormView.setVisibility(View.VISIBLE);
                     }
                 }) {
 
@@ -172,33 +202,35 @@ public class NewReportActivity extends AppCompatActivity {
                 return headers;
             }
         };
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(50 * 1000, 0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         return jsonObjectRequest;
     }
     public void onRadioButtonClicked(View view){
         // Check which radio button was clicked
-        spinner.setVisibility(View.INVISIBLE);
+        mSpinner.setVisibility(View.INVISIBLE);
         boolean checked = ((RadioButton) view).isChecked();
         switch(view.getId()) {
             case R.id.optionRoutine:
                 if (checked){
-                    selectedType = getString(R.string.option_routine);
+                    mSelectedType = getString(R.string.option_routine);
                 }
                 break;
             case R.id.optionEmergency:
                 if (checked){
-                    selectedType = getString(R.string.option_emergency);
-                    spinner.setVisibility(View.VISIBLE);
+                    mSelectedType = getString(R.string.option_emergency);
+                    mSpinner.setVisibility(View.VISIBLE);
                 }
                 break;
             case R.id.optionSpecial:
                 if (checked){
-                    selectedType = getString(R.string.option_special);
+                    mSelectedType = getString(R.string.option_special);
                 }
                 break;
         }
         //TODO: remove
         TextView mtextView = findViewById(R.id.error);
-        mtextView.setText("type = "+selectedType+"\n");
+        mtextView.setText("type = "+mSelectedType+"\n");
     }
 
     // Result from MapsActivity
@@ -215,5 +247,5 @@ public class NewReportActivity extends AppCompatActivity {
                 //TODO: handle
             }
         }
-    }//onActivityResult
+    }
 }

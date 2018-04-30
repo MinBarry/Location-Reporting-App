@@ -15,6 +15,7 @@ app.config.from_object(Config)
 app.config['SECRET_KEY'] = 'super-secret'
 app.config['SECURITY_PASSWORD_SALT'] = 'super-secret'
 app.config['WTF_CSRF_ENABLED'] = False
+app.config['SECURITY_TOKEN_MAX_AGE'] = 60
 #app.config['SECURITY_REGISTERABLE'] = True
 
 # Setting Databse
