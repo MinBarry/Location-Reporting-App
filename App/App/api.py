@@ -1,10 +1,10 @@
 from flask import json, jsonify, request, abort, make_response
-from flask_security import login_required, current_user
+from flask_security import login_required, current_user, auth_token_required
 from math import acos, asin, atan2, cos, sin, radians, degrees
 import datetime 
 from App import app, db
 from App.models import Report, User
-
+ 
 report_types = ['Routine', 'Emergency','Special']
 success = {'code':1}
 # TODO: Route to create a new user
@@ -18,16 +18,17 @@ success = {'code':1}
 # TODO: Route to user logout
   
 # Route to create reports
+
 @app.route('/api/reports', methods = ['POST'])
-def create_report():
-    # TODO: Verify user and get user id from token
-    user_id = None
+@auth_token_required
+def create_report():    
     # Retrieve request contents 
-    if not request.json or not 'type' in request.json:
+    if not request.json or not 'type' in request.json or not 'user_id' in request.json:
         abort(400)
     type = request.json.get('type')
     if type not in report_types:
         abort(400)
+    user_id = request.json.get('user_id')
     description = request.json.get('description')
     address = request.json.get('address')
     lat = request.json.get('lat')

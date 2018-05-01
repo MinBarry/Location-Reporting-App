@@ -155,7 +155,6 @@ public class NewReportActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         //String token = response.getString("response");
-                        //TODO: alert success
                         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(NewReportActivity.this);
                         alertDialogBuilder.setMessage("Your report has been submitted");
                         alertDialogBuilder.setPositiveButton("Ok",
@@ -175,7 +174,6 @@ public class NewReportActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         // TODO: Handle error
                         if(error instanceof AuthFailureError){
-                            //TODO: set alert
                             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(NewReportActivity.this);
                             alertDialogBuilder.setMessage("Your session has ended, please log in again.");
                             alertDialogBuilder.setPositiveButton("Ok",

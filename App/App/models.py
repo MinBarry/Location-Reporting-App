@@ -1,4 +1,8 @@
 from flask_security import UserMixin, RoleMixin
+from wtforms import StringField, BooleanField
+from wtforms.validators import DataRequired
+from flask_security.forms import ConfirmRegisterForm
+from flask_wtf  import Form
 from passlib.apps import custom_app_context as pwd_context
 from datetime import datetime
 from App import db
@@ -11,7 +15,7 @@ class Role(db.Model, RoleMixin):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
-
+#TODO: fix lastname typo.. change both user model and register form 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True)
@@ -35,6 +39,34 @@ class User(db.Model, UserMixin):
     
     def __repr__(self):
         return '<User {}>'.format(self.username)
+
+class ExtendedRegisterForm(ConfirmRegisterForm):
+    username = StringField('Username', [DataRequired()])
+    firstname = StringField('First Name', [DataRequired()])
+    lastname = StringField('Last Name', [DataRequired()])
+    phone = StringField('Phone', [DataRequired()])
+    address1 = StringField('Address Line 1', [DataRequired()])
+    address2 = StringField('Address Line 2')
+    province = StringField('Province', [DataRequired()])
+    postalcode = StringField('Postalcode', [DataRequired()])
+    def validate(self):
+        validation = Form.validate(self)
+        if not validation:
+            return False
+               
+        user = User.query.filter_by(
+            username=self.username.data).first()
+        if user is not None:
+            self.username.errors.append('username already exists')
+            return False
+        if not self.phone.data.isdigit():
+            self.phone.errors.append('Phone number is invalid')
+            return False
+        if not self.postalcode.data.isdigit() or len(self.postalcode.data) != 4:
+            self.postalcode.errors.append('Postal code is invalid')
+            return False
+        return True
+
 
 # Represents Report table        
 class Report(db.Model):

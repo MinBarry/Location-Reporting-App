@@ -80,6 +80,14 @@ public class LoginActivity extends AppCompatActivity{
         });
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+        TextView registerButton = (TextView) findViewById(R.id.registerButton);
+        registerButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+            }
+        });
     }
 
 
@@ -164,6 +172,7 @@ public class LoginActivity extends AppCompatActivity{
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // TODO: Handle error
+                        //TODO: parse server error messages
                         showProgress(false);
                         TextView mtextView = findViewById(R.id.textView);
                         try {
