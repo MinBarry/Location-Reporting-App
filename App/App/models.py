@@ -40,6 +40,13 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return '<User {}>'.format(self.username)
 
+    def jsonify(self):
+        return {"id":self.id,"email":self.email,
+                "username":self.username,
+                "phone":self.phone,
+                "firstname":self.firstname, "lastname":self.lasname, #TODO: change to last name
+                }
+
 class ExtendedRegisterForm(ConfirmRegisterForm):
     username = StringField('Username', [DataRequired()])
     firstname = StringField('First Name', [DataRequired()])

@@ -78,9 +78,12 @@ def get_reports_list():
 
     reports = reports.paginate(page=page, per_page=perpage, error_out=False)
     reportslist = []
+    usersList = []
     for report in reports.items:
-        reportslist.append(report.jsonify())
-    return jsonify({'reports': reportslist, 'pages':reports.pages})
+        if report.user_id: 
+            reportslist.append(report.jsonify())
+            usersList.append(get_user_info(report.user_id).jsonify())
+    return jsonify({'reports': reportslist, 'users':usersList, 'pages':reports.pages})
 
 # Route to get single report by id
 @app.route('/api/reports/<int:id>', methods = ['GET'])
@@ -130,6 +133,11 @@ def not_found(error):
     return make_response(jsonify({'error': 'Forbidden'}), 403)
 
 # Helper Functions
+def get_user_info(id):
+    user = User.query.get(id)
+    if not user:
+        return None
+    return user
 
 def save_image(imagedata, date, user_id):
     imagepath = None
