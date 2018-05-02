@@ -39,6 +39,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class NewReportActivity extends AppCompatActivity {
+    public final static int CURRENT_LOCATION_REQUEST_CODE = 1;
+    public final static int QR_CODE_REQUEST_CODE = 4;
+    public final static int TAKE_PICTURE_REQUEST_CODE = 2;
+    public final static int CHOOSE_PICTURE_REQUEST_CODE = 3;
 
     private String mSelectedType;
     private String mSelectedDescription;
@@ -56,7 +60,7 @@ public class NewReportActivity extends AppCompatActivity {
     private String mCurrentPhotoPath;
     private String mImageData;
 
-
+    //todo: ask for camera, file, and location permissions
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +68,7 @@ public class NewReportActivity extends AppCompatActivity {
         // TODO: check if token exists and is valid
         mSession = new UserSession(this);
         if(!mSession.isUserLoggedIn()){
-            startActivity(new Intent(NewReportActivity.this, LoginActivity.class));
+           startActivity(new Intent(NewReportActivity.this, LoginActivity.class));
         }
 
         mQueue = Singleton.getInstance(this.getApplicationContext()).getRequestQueue();
@@ -95,7 +99,7 @@ public class NewReportActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(NewReportActivity.this, MapsActivity.class);
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, CURRENT_LOCATION_REQUEST_CODE);
             }
         });
 
@@ -118,7 +122,7 @@ public class NewReportActivity extends AppCompatActivity {
                                     case 1:
                                         Intent pickPhoto = new Intent(Intent.ACTION_PICK,
                                                 android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                                        startActivityForResult(pickPhoto , 3);
+                                        startActivityForResult(pickPhoto , CHOOSE_PICTURE_REQUEST_CODE);
                                         break;
                                 }
                             }
@@ -131,7 +135,7 @@ public class NewReportActivity extends AppCompatActivity {
         qrCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                startActivityForResult(new Intent(NewReportActivity.this, QrReader.class), 3);
             }
         });
 
@@ -284,7 +288,7 @@ public class NewReportActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (requestCode == 1) {
+        if (requestCode == CURRENT_LOCATION_REQUEST_CODE) {
             if(resultCode == NewReportActivity.RESULT_OK){
                 lat = data.getDoubleExtra("lat", 0);
                 lng = data.getDoubleExtra("lng", 0);
@@ -293,7 +297,7 @@ public class NewReportActivity extends AppCompatActivity {
             if (resultCode == NewReportActivity.RESULT_CANCELED) {
                 //TODO: handle
             }
-        } else if(requestCode == 2){
+        } else if(requestCode == TAKE_PICTURE_REQUEST_CODE){
             if(resultCode == RESULT_OK){
                 File imgFile = new  File(mCurrentPhotoPath);
                 if(imgFile.exists()) {
@@ -304,8 +308,7 @@ public class NewReportActivity extends AppCompatActivity {
             } else{
                 //TODO: handle
             }
-
-        } else if(requestCode == 3){
+        } else if(requestCode == CHOOSE_PICTURE_REQUEST_CODE){
             if(resultCode == RESULT_OK) {
                 Uri selectedImage = data.getData();
                 try {
@@ -315,7 +318,12 @@ public class NewReportActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
+            } else{
+                //TODO: handle
+            }
+        } else if (requestCode == QR_CODE_REQUEST_CODE){
+            if(resultCode == RESULT_OK){
+                //TODO: get qr code data
             } else{
                 //TODO: handle
             }
@@ -347,7 +355,7 @@ public class NewReportActivity extends AppCompatActivity {
                         "minna.location_reporting_app_android.fileprovider",
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, 2);
+                startActivityForResult(takePictureIntent, TAKE_PICTURE_REQUEST_CODE);
             }
         }else{
             //TODO: handle no camera available
