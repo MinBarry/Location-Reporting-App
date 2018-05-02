@@ -24,7 +24,19 @@
             <TextView
                 android:id="@+id/error"
                 android:layout_width="match_parent"
-                android:layout_height="32dp" />
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/descriptionLable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Description:"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
             <ScrollView
                 android:id="@+id/descriptionForm"
@@ -94,14 +106,38 @@
                     android:layout_weight="1"
                     android:onClick="onRadioButtonClicked"
                     android:text="Special" />
+
             </RadioGroup>
+
+            <TextView
+                android:id="@+id/typeLable2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                android:text="Emergency Type:"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:visibility="gone" />
 
             <Spinner
                 android:id="@+id/spinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:visibility="invisible" />
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/locationLable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                android:text="Location:"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
             <LinearLayout
                 android:id="@+id/mapButtons"
@@ -123,7 +159,19 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="Scan QR Code" />
+
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/pictureLable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                android:text="Attachments:"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
             <Button
                 android:id="@+id/addPicture"
@@ -132,12 +180,39 @@
                 android:layout_marginTop="10dp"
                 android:text="Add Picture" />
 
+            <Button
+                android:id="@+id/removePicture"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Remove Picture"
+                android:visibility="gone" />
+
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="match_parent"
                 android:layout_height="111dp"
                 android:layout_marginTop="10dp"
+                android:visibility="gone"
                 app:srcCompat="@drawable/common_google_signin_btn_icon_light_normal_background" />
+
+            <TextView
+                android:id="@+id/qualityLable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                android:text="Image Quality:"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:visibility="gone" />
+
+            <Spinner
+                android:id="@+id/spinner2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/submit"

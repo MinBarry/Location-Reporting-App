@@ -26,9 +26,9 @@
 
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_maps">Get Location</string>
-    <string name="host_url">http://10.0.2.2:63801</string>
+    <string name="host_url">http://10.0.2.2:52549</string>
 
-    <string-array name="planets_array">
+    <string-array name="types_array">
         <item>Other</item>
         <item>Flood</item>
         <item>Fire</item>
@@ -36,6 +36,13 @@
         <item>Burglary</item>
         <item>Violence</item>
     </string-array>
+
+    <string-array name="quality_array">
+        <item>Low</item>
+        <item>Normal</item>
+        <item>Best</item>
+    </string-array>
+
     <string-array name="image_picker">
         <item>Take a new picture</item>
         <item>Choose a picture from gallery</item>

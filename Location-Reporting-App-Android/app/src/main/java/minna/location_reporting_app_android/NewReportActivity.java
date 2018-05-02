@@ -43,24 +43,32 @@ public class NewReportActivity extends AppCompatActivity {
     public final static int QR_CODE_REQUEST_CODE = 4;
     public final static int TAKE_PICTURE_REQUEST_CODE = 2;
     public final static int CHOOSE_PICTURE_REQUEST_CODE = 3;
+    public final static int DESCRIPTION_MIN_LENGTH = 1;
+    public final static int DESCRIPTION_MAX_LENGTH = 200;
 
     private String mSelectedType;
-    private String mSelectedDescription;
-    private Spinner mSpinner;
-    private TextView mDescriptionView;
-    private View mFormView;
-    private TextView mErrorView;
-    private double lat;
-    private double lng;
-    private String auth_token;
-    private String user_id;
-    private RequestQueue mQueue;
-    private UserSession mSession;
-    private ImageView mImageView;
     private String mCurrentPhotoPath;
     private String mImageData;
+    private String mSelectedAddress;
+    private String auth_token;
+    private String user_id;
+
+    private Spinner mTypeDropDown;
+    private Spinner mQualityDropDown;
+    private TextView mDescriptionView;
+    private TextView mErrorView;
+    private View mFormView;
+    private ImageView mImageView;
+
+    private double lat;
+    private double lng;
+
+    private RequestQueue mQueue;
+    private UserSession mSession;
+    private Bitmap mSelectedImage;
 
     //todo: ask for camera, file, and location permissions
+    //TODO: fix - selected type gets reset but radio button is still selected
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,17 +84,23 @@ public class NewReportActivity extends AppCompatActivity {
         mDescriptionView = (TextView)  findViewById(R.id.description);
         mFormView = (View) findViewById(R.id.newReportForm);
         mErrorView = (TextView)findViewById(R.id.error);
-        mSpinner = (Spinner) findViewById(R.id.spinner);
         mImageView = (ImageView) findViewById(R.id.imageView);
         mImageData = null;
-        // Create an ArrayAdapter using the string array and a default spinner layout
+        mSelectedImage = null;
+        mTypeDropDown = (Spinner) findViewById(R.id.spinner);
+        mQualityDropDown = (Spinner)findViewById(R.id.spinner2);
+        // Create emergency type drop down menu
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.planets_array, android.R.layout.simple_spinner_item);
-        // Specify the layout to use when the list of choices appears
+                R.array.types_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        mSpinner.setAdapter(adapter);
-        mSpinner.setVisibility(View.INVISIBLE);
+        mTypeDropDown.setAdapter(adapter);
+        mTypeDropDown.setVisibility(View.GONE);
+        // create image quality drop down
+        ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(this,
+                R.array.quality_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mQualityDropDown.setAdapter(adapter2);
+        mQualityDropDown.setVisibility(View.GONE);
 
         auth_token = mSession.getToken();
         user_id = mSession.getUserId();
@@ -103,8 +117,7 @@ public class NewReportActivity extends AppCompatActivity {
             }
         });
 
-        //TODO: set qr code
-        //TODO: set add picture
+        // setup add picture button
         Button imageSelect = (Button)findViewById(R.id.addPicture);
         imageSelect.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,6 +144,20 @@ public class NewReportActivity extends AppCompatActivity {
                 builder.show();
             }
         });
+        // setup remove picture button
+        Button removePicture = (Button) findViewById(R.id.removePicture);
+        removePicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mImageData = "";
+                v.setVisibility(View.GONE);
+                mImageView.setVisibility(View.GONE);
+                mQualityDropDown.setVisibility(View.GONE);
+                findViewById(R.id.qualityLable).setVisibility(View.GONE);
+                findViewById(R.id.addPicture).setVisibility(View.VISIBLE);
+            }
+        });
+        // setup qr code button
         Button qrCode = (Button) findViewById(R.id.qrCode);
         qrCode.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,6 +173,7 @@ public class NewReportActivity extends AppCompatActivity {
                 mFormView.setVisibility(View.INVISIBLE);
                 if(!submitReport()) {
                     mFormView.setVisibility(View.VISIBLE);
+                    mErrorView.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -159,12 +187,13 @@ public class NewReportActivity extends AppCompatActivity {
             return false;
         }
         String description = mDescriptionView.getText().toString();
-        if (description.length()<1 || description.length()>200) {
-            mErrorView.setText("Description must be between 1 and 200 characters");
+        if (description.length() < DESCRIPTION_MIN_LENGTH || description.length() > DESCRIPTION_MAX_LENGTH) {
+            mErrorView.setText("Description must be between "+DESCRIPTION_MIN_LENGTH+" and "+DESCRIPTION_MAX_LENGTH+" characters");
+            return false;
         }
         if(mSelectedType.equals(getString(R.string.option_emergency))){
-                String newDesc = "Emergency Type: "+mSpinner.getSelectedItem().toString()+" "+description;
-                description = newDesc;
+                String newDesc = "Emergency Type: "+mTypeDropDown.getSelectedItem().toString()+" "+description;
+                description = newDesc+"\n";
         }
         if(lat == 0 || lng == 0){
             mErrorView.setText("You must specify your location");
@@ -174,9 +203,12 @@ public class NewReportActivity extends AppCompatActivity {
         String latString = ""+lat;
         String lngString = ""+lng;
 
-        //TODO: set address
-        String address="";
-        String image = mImageData;
+        String address = mSelectedAddress;
+        String image = "";
+        if(mSelectedImage != null){
+            int quality = getQuality();
+            image = compressImage(mSelectedImage, quality);
+        }
 
         if (auth_token.length()==0 || user_id.length()==0) {
             mErrorView.setText("not logged in properly");
@@ -225,7 +257,7 @@ public class NewReportActivity extends AppCompatActivity {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // TODO: Handle error
+                        // TODO: Handle timeout error
                         if(error instanceof AuthFailureError){
                             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(NewReportActivity.this);
                             alertDialogBuilder.setMessage("Your session has ended, please log in again.");
@@ -259,7 +291,8 @@ public class NewReportActivity extends AppCompatActivity {
     }
     public void onRadioButtonClicked(View view){
         // Check which radio button was clicked
-        mSpinner.setVisibility(View.INVISIBLE);
+        mTypeDropDown.setVisibility(View.GONE);
+        findViewById(R.id.typeLable2).setVisibility(View.GONE);
         boolean checked = ((RadioButton) view).isChecked();
         switch(view.getId()) {
             case R.id.optionRoutine:
@@ -270,7 +303,8 @@ public class NewReportActivity extends AppCompatActivity {
             case R.id.optionEmergency:
                 if (checked){
                     mSelectedType = getString(R.string.option_emergency);
-                    mSpinner.setVisibility(View.VISIBLE);
+                    mTypeDropDown.setVisibility(View.VISIBLE);
+                    findViewById(R.id.typeLable2).setVisibility(View.VISIBLE);
                 }
                 break;
             case R.id.optionSpecial:
@@ -279,9 +313,6 @@ public class NewReportActivity extends AppCompatActivity {
                 }
                 break;
         }
-        //TODO: remove
-        TextView mtextView = findViewById(R.id.error);
-        mtextView.setText("type = "+mSelectedType+"\n");
     }
 
     // Result from MapsActivity, and picture picker
@@ -295,37 +326,47 @@ public class NewReportActivity extends AppCompatActivity {
             }
 
             if (resultCode == NewReportActivity.RESULT_CANCELED) {
-                //TODO: handle
+                mErrorView.setText("There was problem with getting your current location");
             }
         } else if(requestCode == TAKE_PICTURE_REQUEST_CODE){
             if(resultCode == RESULT_OK){
                 File imgFile = new  File(mCurrentPhotoPath);
                 if(imgFile.exists()) {
-                    Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                    mImageData = compressImage(bitmap);
-                    mImageView.setImageBitmap(bitmap);
+                    mSelectedImage = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                    //mImageData = compressImage(mSelectedImage);
+                    mImageView.setImageBitmap(mSelectedImage);
+                    mImageView.setVisibility(View.VISIBLE);
+                    mQualityDropDown.setVisibility(View.VISIBLE);
+                    findViewById(R.id.qualityLable).setVisibility(View.VISIBLE);
+                    findViewById(R.id.removePicture).setVisibility(View.VISIBLE);
+                    findViewById(R.id.addPicture).setVisibility(View.GONE);
                 }
             } else{
-                //TODO: handle
+                mErrorView.setText("There was problem with setting the picture");
             }
         } else if(requestCode == CHOOSE_PICTURE_REQUEST_CODE){
             if(resultCode == RESULT_OK) {
-                Uri selectedImage = data.getData();
+                Uri selectedImageuri = data.getData();
                 try {
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage);
-                    mImageData = compressImage(bitmap);
-                    mImageView.setImageURI(selectedImage);
+                    mSelectedImage = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageuri);
+                    //mImageData = compressImage(mSelectedImage);
+                    mImageView.setImageURI(selectedImageuri);
+                    mImageView.setVisibility(View.VISIBLE);
+                    mQualityDropDown.setVisibility(View.VISIBLE);
+                    findViewById(R.id.qualityLable).setVisibility(View.VISIBLE);
+                    findViewById(R.id.removePicture).setVisibility(View.VISIBLE);
+                    findViewById(R.id.addPicture).setVisibility(View.GONE);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             } else{
-                //TODO: handle
+                mErrorView.setText("There was problem with setting the picture");
             }
         } else if (requestCode == QR_CODE_REQUEST_CODE){
             if(resultCode == RESULT_OK){
-                //TODO: get qr code data
+                mSelectedAddress = data.getStringExtra("address");
             } else{
-                //TODO: handle
+                mErrorView.setText("QR code was not detected");
             }
         }
     }
@@ -335,7 +376,7 @@ public class NewReportActivity extends AppCompatActivity {
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
             String imageFileName = "JPEG_" + timeStamp + "_";
             File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-            File image = File.createTempFile(imageFileName, ".png", storageDir);
+            File image = File.createTempFile(imageFileName, ".jpeg", storageDir);
             mCurrentPhotoPath = image.getAbsolutePath();
             return image;
         } catch (IOException e){
@@ -362,13 +403,29 @@ public class NewReportActivity extends AppCompatActivity {
         }
     }
 
-    public String compressImage(Bitmap bitmap) {
+    public String compressImage(Bitmap bitmap, int quality) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         //TODO: set quality
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, bos);
         byte[] imageBytes = bos.toByteArray();
         return Base64.encodeToString(imageBytes, Base64.DEFAULT);
 
+    }
+
+    public int getQuality(){
+        int quality = 10;
+        switch (mQualityDropDown.getSelectedItem().toString()){
+            case "Low":
+                quality = 10;
+                break;
+            case "Normal":
+                quality = 30;
+                break;
+            case "Best":
+                quality = 80;
+                break;
+        }
+        return quality;
     }
 
 }

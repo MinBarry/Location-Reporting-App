@@ -1,5 +1,6 @@
 package minna.location_reporting_app_android;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -61,6 +62,10 @@ public class QrReader extends AppCompatActivity {
                 SparseArray<Barcode> barcodes = detections.getDetectedItems();
                 if(barcodes.size()>0){
                     qrCodeText.setText(barcodes.valueAt(0).toString());
+                    Intent intent = new Intent();
+                    intent.putExtra("address", barcodes.valueAt(0).toString());
+                    setResult(QrReader.RESULT_OK, intent);
+                    finish();
                 }
             }
         });
