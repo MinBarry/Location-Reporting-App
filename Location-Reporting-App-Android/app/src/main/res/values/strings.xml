@@ -25,6 +25,7 @@
     <string name="option_emergency">Emergency</string>
 
     <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_maps">Get Location</string>
     <string name="host_url">http://10.0.2.2:63801</string>
 
     <string-array name="planets_array">
@@ -35,5 +36,9 @@
         <item>Burglary</item>
         <item>Violence</item>
     </string-array>
-    <string name="title_activity_maps">Map</string>
+    <string-array name="image_picker">
+        <item>Take a new picture</item>
+        <item>Choose a picture from gallery</item>
+    </string-array>
+
 </resources>

@@ -3,11 +3,19 @@ package minna.location_reporting_app_android;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -19,11 +27,14 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,6 +52,9 @@ public class NewReportActivity extends AppCompatActivity {
     private String user_id;
     private RequestQueue mQueue;
     private UserSession mSession;
+    private ImageView mImageView;
+    private String mCurrentPhotoPath;
+    private String mImageData;
 
 
     @Override
@@ -59,7 +73,8 @@ public class NewReportActivity extends AppCompatActivity {
         mFormView = (View) findViewById(R.id.newReportForm);
         mErrorView = (TextView)findViewById(R.id.error);
         mSpinner = (Spinner) findViewById(R.id.spinner);
-
+        mImageView = (ImageView) findViewById(R.id.imageView);
+        mImageData = null;
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.planets_array, android.R.layout.simple_spinner_item);
@@ -86,6 +101,39 @@ public class NewReportActivity extends AppCompatActivity {
 
         //TODO: set qr code
         //TODO: set add picture
+        Button imageSelect = (Button)findViewById(R.id.addPicture);
+        imageSelect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(NewReportActivity.this);
+                builder.setTitle("Choose an option")
+                        .setItems(R.array.image_picker, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // The 'which' argument contains the index position
+                                // of the selected item
+                                switch (which){
+                                    case 0:
+                                        dispatchTakePictureIntent();
+                                        break;
+                                    case 1:
+                                        Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                                                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                                        startActivityForResult(pickPhoto , 3);
+                                        break;
+                                }
+                            }
+                        });
+                builder.create();
+                builder.show();
+            }
+        });
+        Button qrCode = (Button) findViewById(R.id.qrCode);
+        qrCode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
         final Button submit = (Button) findViewById(R.id.submit);
         submit.setOnClickListener(new View.OnClickListener(){
@@ -124,8 +172,7 @@ public class NewReportActivity extends AppCompatActivity {
 
         //TODO: set address
         String address="";
-        //TODO: set image data
-        String image = "";
+        String image = mImageData;
 
         if (auth_token.length()==0 || user_id.length()==0) {
             mErrorView.setText("not logged in properly");
@@ -143,7 +190,9 @@ public class NewReportActivity extends AppCompatActivity {
         jsonparams.put("address",address);
         jsonparams.put("lat",lat);
         jsonparams.put("lng",lng);
-        jsonparams.put("image",image);
+        if(image!=null) {
+            jsonparams.put("image", image);
+        }
         jsonparams.put("user_id", userid);
         JsonObjectRequest jsonObjectRequest = createReportRequest(url, jsonparams, auth_token);
         mQueue.add(jsonObjectRequest);
@@ -231,7 +280,7 @@ public class NewReportActivity extends AppCompatActivity {
         mtextView.setText("type = "+mSelectedType+"\n");
     }
 
-    // Result from MapsActivity
+    // Result from MapsActivity, and picture picker
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -244,6 +293,74 @@ public class NewReportActivity extends AppCompatActivity {
             if (resultCode == NewReportActivity.RESULT_CANCELED) {
                 //TODO: handle
             }
+        } else if(requestCode == 2){
+            if(resultCode == RESULT_OK){
+                File imgFile = new  File(mCurrentPhotoPath);
+                if(imgFile.exists()) {
+                    Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                    mImageData = compressImage(bitmap);
+                    mImageView.setImageBitmap(bitmap);
+                }
+            } else{
+                //TODO: handle
+            }
+
+        } else if(requestCode == 3){
+            if(resultCode == RESULT_OK) {
+                Uri selectedImage = data.getData();
+                try {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage);
+                    mImageData = compressImage(bitmap);
+                    mImageView.setImageURI(selectedImage);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            } else{
+                //TODO: handle
+            }
         }
     }
+
+    private File createImageFile() {
+        try {
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            String imageFileName = "JPEG_" + timeStamp + "_";
+            File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            File image = File.createTempFile(imageFileName, ".png", storageDir);
+            mCurrentPhotoPath = image.getAbsolutePath();
+            return image;
+        } catch (IOException e){
+            //TODO: handle io exception
+        }
+        return null;
+    }
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = null;
+            photoFile = createImageFile();
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "minna.location_reporting_app_android.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, 2);
+            }
+        }else{
+            //TODO: handle no camera available
+        }
+    }
+
+    public String compressImage(Bitmap bitmap) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        //TODO: set quality
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+        byte[] imageBytes = bos.toByteArray();
+        return Base64.encodeToString(imageBytes, Base64.DEFAULT);
+
+    }
+
 }
