@@ -38,7 +38,7 @@ def create_report():
     imagepath = save_image(imagedata,date,user_id)
     
     # Save report to db
-    report = Report(type, description, imagepath, address, lat, lng, date, user_id)
+    report = Report(type, description, imagedata, address, lat, lng, date, user_id)
     db.session.add(report)
     db.session.flush()
     db.session.commit()

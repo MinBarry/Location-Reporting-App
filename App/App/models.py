@@ -15,6 +15,7 @@ class Role(db.Model, RoleMixin):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
+
 #TODO: fix lastname typo.. change both user model and register form 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -74,7 +75,6 @@ class ExtendedRegisterForm(ConfirmRegisterForm):
             return False
         return True
 
-
 # Represents Report table        
 class Report(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -96,7 +96,8 @@ class Report(db.Model):
                 "address":self.address,
                 "lat":self.lat, "lng":self.lng,
                 "date":self.date,
-                "user_id": self.user_id}
+                "user_id": self.user_id,
+                "image_path": self.image_path}
 
     def __init__(self, type = None, description = None,
                 image_path = None, address = None, lat = None,

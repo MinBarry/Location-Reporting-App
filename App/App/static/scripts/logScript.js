@@ -37,6 +37,7 @@ function requestReportsList(page, type, distance) {
     $.getJSON($SCRIPT_ROOT + url,
         function (data, status_code) {
             reportsList = data.reports
+            console.log(data.reports)
             usersList = data.users
             totalPages = data.pages
             displayReports(reportsList, usersList)
@@ -45,6 +46,7 @@ function requestReportsList(page, type, distance) {
             $(".singleReport").click(function () {
                 $(".reportDetail").hide()
                 latlng = getLatLng($(this).attr("id"), reportsList)
+                //TODO: Don't display map if lat and lng == 0
                 map.setCenter(latlng)
                 marker.setPosition(latlng)
                 $(this).next().show();
@@ -63,6 +65,7 @@ function displayReports(reports, users) {
     $.each(reports, function (i, report) {
         user = users[i]
         $("#reportsView").append(
+            console.log(report)+
             "<tr class='singleReport' id=" + report.id + ">" +
             "<td>" + report.id + "</td>" +
             "<td>" + user.username + "</td>" +
@@ -71,9 +74,8 @@ function displayReports(reports, users) {
             "<td>" + report.type + "</td>" +
             "<td>" + report.description + "</td></tr>" +
             "<tr hidden class='reportDetail'><div class='row'>" +
-            "<td colspan='2'><div class='reportImage'><img src=" +
-            report.image_path + " class='img - thumbnail' alt=" +
-            report.image_path + "></div></td>" +
+            "<td colspan='2'><div class='reportImage'><img src='" +
+            "data:image/jpeg;base64,"+ report.image_path + "' class='img - thumbnail'></div></td>" +
             "<td colspan='2'><div class='reportMap' ></div></td>" +
             "<td colspan='2'><div class='reportInfo'>" +
             "<h4>Report Address:</h4> <p>" + report.address + "</p>" +
