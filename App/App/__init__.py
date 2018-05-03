@@ -15,7 +15,7 @@ app.config.from_object(Config)
 app.config['SECRET_KEY'] = 'super-secret'
 app.config['SECURITY_PASSWORD_SALT'] = 'super-secret'
 app.config['WTF_CSRF_ENABLED'] = False
-app.config['SECURITY_TOKEN_MAX_AGE'] = 60
+app.config['SECURITY_TOKEN_MAX_AGE'] = 60*60
 app.config['SECURITY_REGISTERABLE'] = True
 app.config['SECURITY_SEND_REGISTER_EMAIL'] = False
 
@@ -36,13 +36,14 @@ def init_db():
     user_datastore.add_role_to_user('user@test.net', 'user')   
     db.session.commit()
 
-from App import views, api
+
 from App.models import User, Role, Report, ExtendedRegisterForm
 
 # Setup Flask-Security
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore, confirm_register_form=ExtendedRegisterForm)
 
+from App import views, api
 #if(not path.isfile('test.db')):
 #    init_db()
 

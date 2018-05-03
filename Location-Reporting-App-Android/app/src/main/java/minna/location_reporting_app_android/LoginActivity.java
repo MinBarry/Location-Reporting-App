@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -22,6 +23,13 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,27 +45,39 @@ import static android.Manifest.permission.READ_CONTACTS;
  */
 public class LoginActivity extends AppCompatActivity{
 
+    public static final int GOOGLE_SIGNIN_CODE = 1;
+    public static final int FACEBOOK_SIGNIN_CODE = 2;
     // UI references.
     private EditText mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+
     private RequestQueue mQueue;
     private UserSession mSession;
+    private GoogleSignInClient mGoogleSignInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         //check if user is logged in and move to main activity
         mSession = new UserSession(this);
         if(mSession.isUserLoggedIn()){
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
         }
         setContentView(R.layout.activity_login);
+
         // Set up the login form.
         mEmailView = (EditText) findViewById(R.id.email);
         mPasswordView = (EditText) findViewById(R.id.password);
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+        SignInButton googleSignIn = (SignInButton) findViewById(R.id.googleSignIn);
+
+        mGoogleSignInClient = GoogleSignIn.getClient(this,
+                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail().requestIdToken(getString(R.string.SERVER_ID_GOOGLE))
+                .build());
         mQueue = Singleton.getInstance(this.getApplicationContext()).getRequestQueue();
 
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -78,8 +98,15 @@ public class LoginActivity extends AppCompatActivity{
                 }
             }
         });
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
+
+        googleSignIn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showProgress(true);
+                Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+                startActivityForResult(signInIntent, GOOGLE_SIGNIN_CODE);
+            }
+        });
 
         TextView registerButton = (TextView) findViewById(R.id.registerButton);
         registerButton.setOnClickListener(new OnClickListener() {
@@ -88,11 +115,96 @@ public class LoginActivity extends AppCompatActivity{
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
             }
         });
+
+        mLoginFormView = findViewById(R.id.login_form);
+        mProgressView = findViewById(R.id.login_progress);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        showProgress(false);
+        if (requestCode == GOOGLE_SIGNIN_CODE) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleGoogleSignInResult(task);
+        }
+    }
+
+    private void handleGoogleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            showProgress(true);
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+            String token = account.getIdToken();
+            Log.w("LOG IN", "google token = "+ token);
+            //send server request
+            String url = getString(R.string.host_url)+"/google-login";
+            Map<String,String> params = new HashMap<String, String>();
+            params.put("token", token);
+            JsonObjectRequest request = createLoginRequest(url, params);
+        } catch (ApiException e) {
+            showProgress(false);
+            Log.w("LOG IN", "signInResult:failed code=" + e.getStatusCode());
+        }
+    }
+    //TODO: facebook login
+    private void handleFacebookLogin(){
+
+    }
+
+    private JsonObjectRequest createLoginRequest(String url, Map<String,String> jsonparams){
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.POST, url, new JSONObject(jsonparams), new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            String token = response.getJSONObject("response").getJSONObject("user").getString("authentication_token");
+                            String userid = response.getJSONObject("response").getJSONObject("user").getString("id");
+                            if(token.length() > 0 && userid.length() > 0){
+                                mSession.logUserIn(token, userid);
+                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                            }
+                        } catch (JSONException e) {
+                            showProgress(false);
+                            Log.w("LOG IN", "Response: " + response.toString());
+                        }
+                        showProgress(false);
+                        Log.w("LOG IN", "Response: " + response.toString());
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO: Handle error google login error
+                        showProgress(false);
+                        try {
+                            JSONObject responseData = new JSONObject(new String(error.networkResponse.data,"UTF-8"));
+                            if(responseData.has("response") && responseData.getJSONObject("response").has("errors")) {
+                                if (responseData.getJSONObject("response").getJSONObject("errors").has("email")) {
+                                    mEmailView.setError(responseData.getJSONObject("response").getJSONObject("errors").getString("email"));
+
+                                } else if (responseData.getJSONObject("response").getJSONObject("errors").has("password")) {
+                                    mPasswordView.setError(responseData.getJSONObject("response").getJSONObject("errors").getString("password"));
+                                }
+                                Log.w("LOG IN", new String(error.networkResponse.data, "UTF-8"));
+                            }
+                        } catch (UnsupportedEncodingException e) {
+                            Log.w("LOG IN", "Something went wrong");
+                        } catch (JSONException e) {
+                            Log.w("LOG IN", "Something went wrong with json");
+                        }
+                    }
+                }) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json; charset=utf-8");
+                return headers;
+            }
+        };
+        return jsonObjectRequest;
+    }
 
     private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
         if(email.length()<1 || !email.contains("@") ){
             mEmailView.setError(getString(R.string.error_invalid_email));
             return false;
@@ -101,17 +213,13 @@ public class LoginActivity extends AppCompatActivity{
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        if(password.length()<1){
+        if(password.length()<5){
             mPasswordView.setError(getString(R.string.error_invalid_password));
             return false;
         }
         return true;
     }
 
-    /**
-     * Shows the progress UI and hides the login form.
-     */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
         // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
@@ -144,68 +252,5 @@ public class LoginActivity extends AppCompatActivity{
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
-
-    private JsonObjectRequest createLoginRequest(String url, Map<String,String> jsonparams){
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.POST, url, new JSONObject(jsonparams), new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            String token = response.getJSONObject("response").getJSONObject("user").getString("authentication_token");
-                            String userid = response.getJSONObject("response").getJSONObject("user").getString("id");
-                            if(token.length() > 0 && userid.length() > 0){
-                                mSession.logUserIn(token, userid);
-                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                            }
-                        } catch (JSONException e) {
-                            showProgress(false);
-                            //TODO: remove
-                            TextView mtextView = findViewById(R.id.textView);
-                            mtextView.setText("Response: " + response.toString());
-                        }
-                        showProgress(false);
-                        //TODO: remove
-                        TextView mtextView = findViewById(R.id.textView);
-                        mtextView.setText("Response: " + response.toString());
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // TODO: Handle error
-                        //TODO: parse server error messages
-                        showProgress(false);
-                        TextView mtextView = findViewById(R.id.textView);
-                        try {
-                            JSONObject responseData = new JSONObject(new String(error.networkResponse.data,"UTF-8"));
-                            if(responseData.has("response") && responseData.getJSONObject("response").has("errors")) {
-                                if (responseData.getJSONObject("response").getJSONObject("errors").has("email")) {
-                                    mEmailView.setError(responseData.getJSONObject("response").getJSONObject("errors").getString("email"));
-
-                                } else if (responseData.getJSONObject("response").getJSONObject("errors").has("password")) {
-                                    mPasswordView.setError(responseData.getJSONObject("response").getJSONObject("errors").getString("password"));
-                                }
-                                //TODO: remove
-                                mtextView.setText(new String(error.networkResponse.data, "UTF-8"));
-                            }
-                        } catch (UnsupportedEncodingException e) {
-                            //TODO: remove
-                            mtextView.setText("Something went wrong");
-                        } catch (JSONException e) {
-                            //TODO: remove
-                            mtextView.setText("Something went wrong with json");
-                        }
-                    }
-                }) {
-
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("Content-Type", "application/json; charset=utf-8");
-                return headers;
-            }
-        };
-        return jsonObjectRequest;
-    }
-
 }
 

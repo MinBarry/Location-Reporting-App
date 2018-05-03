@@ -32,6 +32,12 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/googleSignIn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:layout_editor_absoluteY="225dp" />
+
             <TextView
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
@@ -99,6 +105,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     tools:text="REGISTER" />
+
             </android.support.constraint.ConstraintLayout>
 
         </LinearLayout>
