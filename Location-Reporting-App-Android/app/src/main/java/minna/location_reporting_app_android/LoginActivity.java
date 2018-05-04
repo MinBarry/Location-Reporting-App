@@ -76,7 +76,7 @@ public class LoginActivity extends AppCompatActivity{
 
         mGoogleSignInClient = GoogleSignIn.getClient(this,
                 new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail().requestIdToken(getString(R.string.SERVER_ID_GOOGLE))
+                .requestEmail().requestIdToken(getString(R.string.server_client_id))
                 .build());
         mQueue = Singleton.getInstance(this.getApplicationContext()).getRequestQueue();
 
@@ -141,6 +141,7 @@ public class LoginActivity extends AppCompatActivity{
             Map<String,String> params = new HashMap<String, String>();
             params.put("token", token);
             JsonObjectRequest request = createLoginRequest(url, params);
+            mQueue.add(request);
         } catch (ApiException e) {
             showProgress(false);
             Log.w("LOG IN", "signInResult:failed code=" + e.getStatusCode());
