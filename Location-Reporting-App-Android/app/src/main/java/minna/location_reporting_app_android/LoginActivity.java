@@ -16,13 +16,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -30,6 +34,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,11 +63,14 @@ public class LoginActivity extends AppCompatActivity{
     private RequestQueue mQueue;
     private UserSession mSession;
     private GoogleSignInClient mGoogleSignInClient;
+    private CallbackManager mCallbackManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        //init facebook sdk
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
         //check if user is logged in and move to main activity
         mSession = new UserSession(this);
         if(mSession.isUserLoggedIn()){
@@ -79,6 +89,38 @@ public class LoginActivity extends AppCompatActivity{
                 .requestEmail().requestIdToken(getString(R.string.server_client_id))
                 .build());
         mQueue = Singleton.getInstance(this.getApplicationContext()).getRequestQueue();
+
+        mCallbackManager = CallbackManager.Factory.create();
+        LoginManager.getInstance().registerCallback(mCallbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        // App code
+
+                        showProgress(true);
+                        AccessToken token = AccessToken.getCurrentAccessToken();
+                        if(token != null && !token.isExpired()){
+                            Log.w("FACEBOOK", token.getPermissions().toString());
+                            String url = getString(R.string.host_url)+"/google-login";
+                            Map<String,String> params = new HashMap<String, String>();
+                            params.put("token", token.getToken());
+                            JsonObjectRequest request = createLoginRequest(url, params);
+                            mQueue.add(request);
+                        }
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        // App code
+                        Log.w("FACEBOOK", "cancel");
+                    }
+
+                    @Override
+                    public void onError(FacebookException exception) {
+                        // App code
+                        Log.w("FACEBOOK", "error");
+                    }
+                });
 
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -127,6 +169,8 @@ public class LoginActivity extends AppCompatActivity{
         if (requestCode == GOOGLE_SIGNIN_CODE) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleGoogleSignInResult(task);
+        } else {
+            mCallbackManager.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -146,10 +190,6 @@ public class LoginActivity extends AppCompatActivity{
             showProgress(false);
             Log.w("LOG IN", "signInResult:failed code=" + e.getStatusCode());
         }
-    }
-    //TODO: facebook login
-    private void handleFacebookLogin(){
-
     }
 
     private JsonObjectRequest createLoginRequest(String url, Map<String,String> jsonparams){
@@ -253,5 +293,6 @@ public class LoginActivity extends AppCompatActivity{
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
+
 }
 

@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Location Reporting App</string>
+    <string name="server_client_id">333088297286-th7rtelj0mfl2ihqkkl1eb819enj6083.apps.googleusercontent.com</string>
+    <string name="facebook_app_id">166468394185099</string>
+    <string name="fb_login_protocol_scheme">fb166468394185099</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -26,7 +29,7 @@
 
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_maps">Get Location</string>
-    <string name="host_url">http://10.0.2.2:52549</string>
+    <string name="host_url">http://10.0.2.2:52585</string>
 
     <string-array name="types_array">
         <item>Other</item>
