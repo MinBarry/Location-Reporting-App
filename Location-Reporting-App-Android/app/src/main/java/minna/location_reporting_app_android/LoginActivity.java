@@ -16,9 +16,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.ClientError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.facebook.AccessToken;
@@ -27,6 +29,7 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -42,6 +45,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -90,6 +94,8 @@ public class LoginActivity extends AppCompatActivity{
                 .build());
         mQueue = Singleton.getInstance(this.getApplicationContext()).getRequestQueue();
 
+        LoginButton authButton = (LoginButton)findViewById(R.id.facebookSigin);
+        authButton.setReadPermissions(Arrays.asList("email"));
         mCallbackManager = CallbackManager.Factory.create();
         LoginManager.getInstance().registerCallback(mCallbackManager,
                 new FacebookCallback<LoginResult>() {
@@ -98,10 +104,11 @@ public class LoginActivity extends AppCompatActivity{
                         // App code
 
                         showProgress(true);
+
                         AccessToken token = AccessToken.getCurrentAccessToken();
                         if(token != null && !token.isExpired()){
-                            Log.w("FACEBOOK", token.getPermissions().toString());
-                            String url = getString(R.string.host_url)+"/google-login";
+                            Log.w("FACEBOOK", token.getToken());
+                            String url = getString(R.string.host_url)+"/facebook-login";
                             Map<String,String> params = new HashMap<String, String>();
                             params.put("token", token.getToken());
                             JsonObjectRequest request = createLoginRequest(url, params);
@@ -216,21 +223,26 @@ public class LoginActivity extends AppCompatActivity{
                     public void onErrorResponse(VolleyError error) {
                         // TODO: Handle error google login error
                         showProgress(false);
-                        try {
-                            JSONObject responseData = new JSONObject(new String(error.networkResponse.data,"UTF-8"));
-                            if(responseData.has("response") && responseData.getJSONObject("response").has("errors")) {
-                                if (responseData.getJSONObject("response").getJSONObject("errors").has("email")) {
-                                    mEmailView.setError(responseData.getJSONObject("response").getJSONObject("errors").getString("email"));
+                        if (error instanceof TimeoutError) {
+                            //TODO: handle
+                            Log.w("LOG IN", new String("timeout error"));
+                        } else if (error instanceof ClientError){
+                            try {
+                                JSONObject responseData = new JSONObject(new String(error.networkResponse.data, "UTF-8"));
+                                if (responseData.has("response") && responseData.getJSONObject("response").has("errors")) {
+                                    if (responseData.getJSONObject("response").getJSONObject("errors").has("email")) {
+                                        mEmailView.setError(responseData.getJSONObject("response").getJSONObject("errors").getString("email"));
 
-                                } else if (responseData.getJSONObject("response").getJSONObject("errors").has("password")) {
-                                    mPasswordView.setError(responseData.getJSONObject("response").getJSONObject("errors").getString("password"));
+                                    } else if (responseData.getJSONObject("response").getJSONObject("errors").has("password")) {
+                                        mPasswordView.setError(responseData.getJSONObject("response").getJSONObject("errors").getString("password"));
+                                    }
+                                    Log.w("LOG IN", new String(error.networkResponse.data, "UTF-8"));
                                 }
-                                Log.w("LOG IN", new String(error.networkResponse.data, "UTF-8"));
+                            } catch (UnsupportedEncodingException e) {
+                                Log.w("LOG IN", "Something went wrong");
+                            } catch (JSONException e) {
+                                Log.w("LOG IN", "Something went wrong with json");
                             }
-                        } catch (UnsupportedEncodingException e) {
-                            Log.w("LOG IN", "Something went wrong");
-                        } catch (JSONException e) {
-                            Log.w("LOG IN", "Something went wrong with json");
                         }
                     }
                 }) {
