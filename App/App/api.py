@@ -7,18 +7,7 @@ from App.models import Report, User
  
 report_types = ['Routine', 'Emergency','Special']
 success = {'code':1}
-# TODO: Route to create a new user
-
-# TODO: Route to edit user
-
-# TODO: Route to delete user
-
-# TODO: Route to user login 
-
-# TODO: Route to user logout
-  
 # Route to create reports
-
 @app.route('/api/reports', methods = ['POST'])
 @auth_token_required
 def create_report():    
@@ -70,13 +59,18 @@ def get_reports_list():
             lat = float(request.args.get('lat'))
             lng = float(request.args.get('lng'))
         else:
+            lat = current_user.lat
+            lng = current_user.lng
+            print(current_user.lat)
+        if not lat or not lng:
             abort(400)
+
         bnd = bound(lat, lng, distance)
         reports = Report.query.filter((Report.lat >= bnd['S']['lat']) & (Report.lat <= bnd['N']['lat'])
                                       & (Report.lng >= bnd['W']['lng']) & (Report.lng <= bnd['E']['lng']))
     # TODO: Filter by user
 
-    reports = reports.paginate(page=page, per_page=perpage, error_out=False)
+    reports = reports.order_by(Report.date.desc()).paginate(page=page, per_page=perpage, error_out=False)
     reportslist = []
     usersList = []
     for report in reports.items:

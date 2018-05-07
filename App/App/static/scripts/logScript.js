@@ -17,7 +17,7 @@ $(function () {
         requestReportsList(1, selected_type, selected_distance)
     })
     requestReportsList(1)
-});
+})
 
 ///////////////////////////////////////////
 // Request reports list
@@ -45,16 +45,20 @@ function requestReportsList(page, type, distance) {
             // Attach a function to Show report details when a report is clicked 
             $(".singleReport").click(function () {
                 $(".reportDetail").hide()
+                $(".singleReport").removeClass("active")
+                $(this).addClass("active")
                 latlng = getLatLng($(this).attr("id"), reportsList)
                 //TODO: Don't display map if lat and lng == 0
                 map.setCenter(latlng)
                 marker.setPosition(latlng)
-                $(this).next().show();
+                map.setZoom(15)
+                $(this).next().show()
+                $(this).next().addClass("active")
                 $(this).next().find(".reportMap").append(map.getDiv())
                 $("#map").show()
-            });
+            })
         }
-    );
+    )
 }
 
 
@@ -64,27 +68,31 @@ function requestReportsList(page, type, distance) {
 function displayReports(reports, users) {
     $.each(reports, function (i, report) {
         user = users[i]
+        imageHtml = "<td colspan='2'></td>"
+        if (report.image_path) {
+            imageHtml = "<td colspan='2'><div class='reportImage'><img src='" +
+                "data:image/jpeg;base64," + report.image_path + "'class='image'></div></td>"
+        }
         $("#reportsView").append(
             console.log(report)+
             "<tr class='singleReport' id=" + report.id + ">" +
             "<td>" + report.id + "</td>" +
             "<td>" + user.username + "</td>" +
-            "<td>" + report.location + "</td>" +
+           // "<td>" + report.location + "</td>" +
             "<td>" + report.date + "</td>" +
             "<td>" + report.type + "</td>" +
             "<td>" + report.description + "</td></tr>" +
             "<tr hidden class='reportDetail'><div class='row'>" +
-            "<td colspan='2'><div class='reportImage'><img src='" +
-            "data:image/jpeg;base64,"+ report.image_path + "' class='img - thumbnail'></div></td>" +
             "<td colspan='2'><div class='reportMap' ></div></td>" +
             "<td colspan='2'><div class='reportInfo'>" +
             "<h4>Report Address:</h4> <p>" + report.address + "</p>" +
             "<h4>User Full Name:</h4> <P>" + user.firstname + " " + user.lastname + "</p>" +
             "<h4>User Email:</h4><p>" + user.email + "</p></div ></td > " +
+            imageHtml +
             "</div></tr >"
-        );
+        )
 
-    });
+    })
 }
 
 ///////////////////////////////////////////
@@ -128,15 +136,15 @@ function getLatLng(report_id, reports) {
 // Google map initilazation
 ///////////////////////////////////////////
 function initMap() {
-    var uluru = { lat: 0, lng: 0};
+    var uluru = { lat: 0, lng: 0}
     map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 4,
+        zoom: 15,
         center: uluru
-    });
+    })
     marker = new google.maps.Marker({
         position: uluru,
         map: map
-    });
+    })
     $("#map").hide()
 }
 
