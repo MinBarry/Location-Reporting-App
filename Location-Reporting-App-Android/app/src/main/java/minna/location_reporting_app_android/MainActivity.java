@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 session.logUserOut();
-                LoginManager.getInstance().logOut();
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
             }
         });

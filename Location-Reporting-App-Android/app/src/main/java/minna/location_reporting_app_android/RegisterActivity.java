@@ -1,11 +1,16 @@
 package minna.location_reporting_app_android;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -41,6 +46,7 @@ public class RegisterActivity extends AppCompatActivity {
     private TextView mPostalcodeView;
     private TextView mProvinceView;
     private View mForm;
+    private View mProgressView;
 
 
     @Override
@@ -62,11 +68,12 @@ public class RegisterActivity extends AppCompatActivity {
         mPostalcodeView = findViewById(R.id.postalCode);
         mProvinceView = findViewById(R.id.province);
         mForm = (View) findViewById(R.id.rgisterForm);
+        mProgressView = (View) findViewById(R.id.registerPrrogress);
         Button submit = (Button)findViewById(R.id.submit);
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mForm.setVisibility(View.INVISIBLE);
+                showProgress(true);
                 boolean valid = true;
 
                 String email = mEmailView.getText().toString();
@@ -85,7 +92,7 @@ public class RegisterActivity extends AppCompatActivity {
                 if(valid){
                     submitReportRequest(email, password, username, firstname, lastname, phone, address1, address2, province, postalcode);
                 } else {
-                    mForm.setVisibility(View.VISIBLE);
+                   showProgress(false);
                 }
 
             }
@@ -123,13 +130,13 @@ public class RegisterActivity extends AppCompatActivity {
                             }
                         } catch (JSONException e) {
                             //showProgress(false);
-                            mForm.setVisibility(View.VISIBLE);
+                            showProgress(false);
                             //TODO: remove
                             TextView mtextView = findViewById(R.id.textView2);
                             mtextView.setText("Response: " + response.toString());
                         }
                         //showProgress(false);
-                        mForm.setVisibility(View.VISIBLE);
+                        showProgress(false);
                         //TODO: remove
                         TextView mtextView = findViewById(R.id.textView2);
                         mtextView.setText("Response: " + response.toString());
@@ -140,7 +147,7 @@ public class RegisterActivity extends AppCompatActivity {
                         // TODO: Handle error
                         //TODO: parse server error messages
                         //showProgress(false);
-                        mForm.setVisibility(View.VISIBLE);
+                        showProgress(false);
                         TextView mtextView = findViewById(R.id.textView2);
                         if (error instanceof TimeoutError){
                             final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RegisterActivity.this);
@@ -231,5 +238,33 @@ public class RegisterActivity extends AppCompatActivity {
             return false;
         }
         return true;
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    private void showProgress(final boolean show) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+            mForm.setVisibility(show ? View.GONE : View.VISIBLE);
+            mForm.animate().setDuration(shortAnimTime).alpha(
+                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mForm.setVisibility(show ? View.GONE : View.VISIBLE);
+                }
+            });
+
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mProgressView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+        } else {
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mForm.setVisibility(show ? View.GONE : View.VISIBLE);
+        }
     }
 }

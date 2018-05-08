@@ -3,6 +3,8 @@ package minna.location_reporting_app_android;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.facebook.login.LoginManager;
+
 
 public class UserSession{
 
@@ -24,6 +26,7 @@ public class UserSession{
         mEditor.remove(context.getString(R.string.token_key));
         mEditor.remove(context.getString(R.string.user_key));
         mEditor.apply();
+        LoginManager.getInstance().logOut();
     }
     public boolean isUserLoggedIn(){
         return (mSharedPreferences.contains(context.getString(R.string.token_key)));

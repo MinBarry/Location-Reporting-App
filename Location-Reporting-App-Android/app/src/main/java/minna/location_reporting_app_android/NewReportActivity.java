@@ -1,17 +1,24 @@
 package minna.location_reporting_app_android;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -36,6 +43,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class NewReportActivity extends AppCompatActivity {
@@ -48,8 +57,9 @@ public class NewReportActivity extends AppCompatActivity {
 
     private String mSelectedType;
     private String mCurrentPhotoPath;
-    private String mImageData;
     private String mSelectedAddress;
+    private String mLatLngAddress;
+    private String mQrAddress;
     private String auth_token;
     private String user_id;
 
@@ -58,6 +68,7 @@ public class NewReportActivity extends AppCompatActivity {
     private TextView mDescriptionView;
     private TextView mErrorView;
     private View mFormView;
+    private View mProgressView;
     private ImageView mImageView;
 
     private double lat;
@@ -67,7 +78,7 @@ public class NewReportActivity extends AppCompatActivity {
     private UserSession mSession;
     private Bitmap mSelectedImage;
 
-    //todo: ask for camera, file, and location permissions
+    //todo: ask for camera and file permissions
     //TODO: fix - selected type gets reset but radio button is still selected
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,11 +92,13 @@ public class NewReportActivity extends AppCompatActivity {
 
         mQueue = Singleton.getInstance(this.getApplicationContext()).getRequestQueue();
         mSelectedType="";
+        mLatLngAddress="";
+        mQrAddress="";
         mDescriptionView = (TextView)  findViewById(R.id.description);
         mFormView = (View) findViewById(R.id.newReportForm);
+        mProgressView = (View) findViewById(R.id.newReportProgress);
         mErrorView = (TextView)findViewById(R.id.error);
         mImageView = (ImageView) findViewById(R.id.imageView);
-        mImageData = null;
         mSelectedImage = null;
         mTypeDropDown = (Spinner) findViewById(R.id.spinner);
         mQualityDropDown = (Spinner)findViewById(R.id.spinner2);
@@ -130,6 +143,7 @@ public class NewReportActivity extends AppCompatActivity {
                                 // of the selected item
                                 switch (which){
                                     case 0:
+                                        //TODO: check camera permission
                                         dispatchTakePictureIntent();
                                         break;
                                     case 1:
@@ -140,6 +154,7 @@ public class NewReportActivity extends AppCompatActivity {
                                 }
                             }
                         });
+                //TODO: check storage permission
                 builder.create();
                 builder.show();
             }
@@ -149,7 +164,6 @@ public class NewReportActivity extends AppCompatActivity {
         removePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mImageData = "";
                 v.setVisibility(View.GONE);
                 mImageView.setVisibility(View.GONE);
                 mQualityDropDown.setVisibility(View.GONE);
@@ -170,9 +184,9 @@ public class NewReportActivity extends AppCompatActivity {
         submit.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                mFormView.setVisibility(View.INVISIBLE);
+                showProgress(true);
                 if(!submitReport()) {
-                    mFormView.setVisibility(View.VISIBLE);
+                    showProgress(false);
                     mErrorView.setVisibility(View.VISIBLE);
                 }
             }
@@ -192,8 +206,8 @@ public class NewReportActivity extends AppCompatActivity {
             return false;
         }
         if(mSelectedType.equals(getString(R.string.option_emergency))){
-                String newDesc = "Emergency Type: "+mTypeDropDown.getSelectedItem().toString()+" "+description;
-                description = newDesc+"\n";
+                String newDesc = "Emergency Type: "+mTypeDropDown.getSelectedItem().toString()+".\n"+description;
+                description = newDesc;
         }
         if(lat == 0 || lng == 0){
             mErrorView.setText("You must specify your location");
@@ -203,7 +217,7 @@ public class NewReportActivity extends AppCompatActivity {
         String latString = ""+lat;
         String lngString = ""+lng;
 
-        String address = mSelectedAddress;
+        String address = mQrAddress+"\n"+mLatLngAddress;
         String image = "";
         if(mSelectedImage != null){
             int quality = getQuality();
@@ -268,12 +282,13 @@ public class NewReportActivity extends AppCompatActivity {
                                             startActivity(new Intent(NewReportActivity.this, LoginActivity.class));
                                         }
                                     });
+                            mSession.logUserOut();
                             AlertDialog alertDialog = alertDialogBuilder.create();
                             alertDialog.show();
-                            mSession.logUserOut();
                         }
                         mErrorView.setText(error.toString());
-                        mFormView.setVisibility(View.VISIBLE);
+                        mErrorView.setVisibility(View.VISIBLE);
+                        showProgress(false);
                     }
                 }) {
 
@@ -289,6 +304,7 @@ public class NewReportActivity extends AppCompatActivity {
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         return jsonObjectRequest;
     }
+
     public void onRadioButtonClicked(View view){
         // Check which radio button was clicked
         mTypeDropDown.setVisibility(View.GONE);
@@ -315,7 +331,7 @@ public class NewReportActivity extends AppCompatActivity {
         }
     }
 
-    // Result from MapsActivity, and picture picker
+    // Result from MapsActivity, picture picker and qr scanner
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -323,6 +339,8 @@ public class NewReportActivity extends AppCompatActivity {
             if(resultCode == NewReportActivity.RESULT_OK){
                 lat = data.getDoubleExtra("lat", 0);
                 lng = data.getDoubleExtra("lng", 0);
+                mLatLngAddress = getCompleteAddressString(lat,lng);
+
             }
 
             if (resultCode == NewReportActivity.RESULT_CANCELED) {
@@ -364,7 +382,10 @@ public class NewReportActivity extends AppCompatActivity {
             }
         } else if (requestCode == QR_CODE_REQUEST_CODE){
             if(resultCode == RESULT_OK){
-                mSelectedAddress = data.getStringExtra("address");
+                mQrAddress = data.getStringExtra("address");
+                TextView addressView = findViewById(R.id.qrTextView);
+                addressView.setText(mQrAddress);
+                addressView.setVisibility(View.VISIBLE);
             } else{
                 mErrorView.setText("QR code was not detected");
             }
@@ -405,11 +426,9 @@ public class NewReportActivity extends AppCompatActivity {
 
     public String compressImage(Bitmap bitmap, int quality) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        //TODO: set quality
         bitmap.compress(Bitmap.CompressFormat.JPEG, quality, bos);
         byte[] imageBytes = bos.toByteArray();
         return Base64.encodeToString(imageBytes, Base64.DEFAULT);
-
     }
 
     public int getQuality(){
@@ -426,6 +445,62 @@ public class NewReportActivity extends AppCompatActivity {
                 break;
         }
         return quality;
+    }
+
+    private String getCompleteAddressString(double LATITUDE, double LONGITUDE) {
+        String strAdd = "";
+        TextView addressView = findViewById(R.id.latlngTextView);
+        addressView.setText("Setting addres..");
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
+            if (addresses != null) {
+                Address returnedAddress = addresses.get(0);
+                StringBuilder strReturnedAddress = new StringBuilder("");
+
+                for (int i = 0; i <= returnedAddress.getMaxAddressLineIndex(); i++) {
+                    strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n");
+                }
+                strAdd = strReturnedAddress.toString();
+            } else {
+                strAdd = "Latitude: "+LATITUDE+"\nLongtitude: "+LONGITUDE;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            strAdd = "Latitude: "+LATITUDE+"\nLongtitude: "+LONGITUDE;
+        }
+        //show address to user
+        addressView.setText(strAdd);
+        addressView.setVisibility(View.VISIBLE);
+        return strAdd;
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    private void showProgress(final boolean show) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+            mFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            mFormView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+                }
+            });
+
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mProgressView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+        } else {
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        }
     }
 
 }

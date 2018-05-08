@@ -50,7 +50,8 @@ public class QrReader extends AppCompatActivity {
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
                 mCameraSource.stop();
-            } });
+            }
+        });
         mDetector.setProcessor(new Detector.Processor<Barcode>() {
             @Override
             public void release() {
