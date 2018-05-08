@@ -16,7 +16,6 @@ class Role(db.Model, RoleMixin):
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
 
-#TODO: fix lastname typo.. change both user model and register form 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True)
@@ -27,7 +26,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(64),index=True, unique=True)
     phone = db.Column(db.String(15), unique=True)
     firstname = db.Column(db.String(64))
-    lasname = db.Column(db.String(64))
+    lastname = db.Column(db.String(64)) 
     address1 = db.Column(db.String(120))
     address2 = db.Column(db.String(120))
     province = db.Column(db.String(64))
@@ -45,18 +44,18 @@ class User(db.Model, UserMixin):
         return {"id":self.id,"email":self.email,
                 "username":self.username,
                 "phone":self.phone,
-                "firstname":self.firstname, "lastname":self.lasname, #TODO: change to last name
+                "firstname":self.firstname, "lastname":self.lastname
                 }
 
 class ExtendedRegisterForm(ConfirmRegisterForm):
     username = StringField('Username', [DataRequired()])
     firstname = StringField('First Name', [DataRequired()])
     lastname = StringField('Last Name', [DataRequired()])
-    phone = StringField('Phone', [DataRequired()])
-    address1 = StringField('Address Line 1', [DataRequired()])
+    phone = StringField('Phone')
+    address1 = StringField('Address Line 1')
     address2 = StringField('Address Line 2')
-    province = StringField('Province', [DataRequired()])
-    postalcode = StringField('Postalcode', [DataRequired()])
+    province = StringField('Province')
+    postalcode = StringField('Postalcode')
     def validate(self):
         validation = Form.validate(self)
         if not validation:
@@ -67,12 +66,14 @@ class ExtendedRegisterForm(ConfirmRegisterForm):
         if user is not None:
             self.username.errors.append('username already exists')
             return False
-        if not self.phone.data.isdigit():
-            self.phone.errors.append('Phone number is invalid')
-            return False
-        if not self.postalcode.data.isdigit() or len(self.postalcode.data) != 4:
-            self.postalcode.errors.append('Postal code is invalid')
-            return False
+        if self.phone.data:
+            if not self.phone.data.isdigit():
+                self.phone.errors.append('Phone number is invalid')
+                return False
+        if self.postalcode.data:
+            if not self.postalcode.data.isdigit() or len(self.postalcode.data) != 4:
+                self.postalcode.errors.append('Postal code is invalid')
+                return False
         return True
 
 # Represents Report table        

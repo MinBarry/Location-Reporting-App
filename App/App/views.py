@@ -41,7 +41,7 @@ def google_login():
     except ValueError as e:
         abort(400)
     # get user info from google response if user is authenticated
-    user = User(email=idinfo['email'], firstname= idinfo['given_name'], lasname=idinfo['family_name'], username=idinfo['email']) #TODO: change lasname
+    user = User(email=idinfo['email'], firstname= idinfo['given_name'], lastname=idinfo['family_name'], username=idinfo['email']) #TODO: change lasname
     return login_register_3rd_party(user)
 
 @app.route('/facebook-login', methods=['POST'])
@@ -58,7 +58,7 @@ def facebook_login():
         auth_response = req.get('https://graph.facebook.com/debug_token?input_token='+token+'&access_token='+access_token)
         userinfo = req.get('https://graph.facebook.com/v3.0/'+auth_response.json()['data']['user_id']+'?access_token='+access_token+'&fields=email,first_name,last_name')
         userinfo = userinfo.json()
-        user = User(email=userinfo['email'], firstname= userinfo['first_name'], lasname=userinfo['last_name'], username=userinfo['email']) #TODO: change lasname
+        user = User(email=userinfo['email'], firstname= userinfo['first_name'], lastname=userinfo['last_name'], username=userinfo['email']) #TODO: change lasname
     except ValueError as e:
         abort(400)
     return login_register_3rd_party(user)
@@ -69,7 +69,7 @@ def login_register_3rd_party(user):
     # Create a new user
     if checkUser is None:
         user_datastore.create_user(email=user.email, password=generate_random_password(), 
-                                   firstname=user.firstname, lasname= user.lasname, username=user.username) #TODO: change lasname
+                                   firstname=user.firstname, lastname= user.lastname, username=user.username) #TODO: change lasname
         db.session.commit()
     # log user in
     user = User.query.filter_by(email=user.email).first()

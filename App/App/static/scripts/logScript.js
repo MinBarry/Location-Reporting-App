@@ -85,7 +85,7 @@ function displayReports(reports, users) {
             "<tr hidden class='reportDetail'><div class='row'>" +
             "<td colspan='2'><div class='reportMap' ></div></td>" +
             "<td colspan='2'><div class='reportInfo'>" +
-            "<h4>Report Address:</h4> <p>" + report.address + "</p>" +
+            "<h4>Report Location:</h4> <p>" + report.address + "</p>" +
             "<h4>User Full Name:</h4> <P>" + user.firstname + " " + user.lastname + "</p>" +
             "<h4>User Email:</h4><p>" + user.email + "</p></div ></td > " +
             imageHtml +
