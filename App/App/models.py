@@ -24,7 +24,7 @@ class User(db.Model, UserMixin):
     active = db.Column(db.Boolean())
     confirmed_at = db.Column(db.DateTime())
     username = db.Column(db.String(64),index=True, unique=True)
-    phone = db.Column(db.String(15), unique=True)
+    phone = db.Column(db.String(15))
     firstname = db.Column(db.String(64))
     lastname = db.Column(db.String(64)) 
     address1 = db.Column(db.String(120))
