@@ -42,23 +42,29 @@ input[type="checkbox"].input-validation-error {
 }
 
 .navbar-custom {
-    background-color: #a9a9a9;
+    background-color: #ffffff;
 }
 
-    /* change the brand and text color */
-    .navbar-custom .navbar-brand,
-    .navbar-custom .navbar-text {
-        color: #000000;
-    }
-    /* change the link color */
-    .navbar-custom .navbar-nav .nav-link {
-        color: #8d8d8d;
-    }
-    /* change the color of active or hovered links */
-    .navbar-custom .nav-item.active .nav-link,
-    .navbar-custom .nav-item:hover .nav-link {
-        color: #8d8d8d;
-    }
+.navbar-custom .navbar-brand,
+.navbar-custom .navbar-text {
+    color: #000000;
+}
+
+.navbar-custom .navbar-nav .nav-link {
+    color: #8d8d8d;
+}
+
+.navbar-custom .nav-item.active .nav-link,
+.navbar-custom .nav-item:hover .nav-link {
+    color: #8d8d8d;
+}
+
+#greynavbar {
+    background-color: #e2e2e2;
+    border-top-style: solid;
+    border-top-color: cornflowerblue;
+    border-bottom-color: #e2e2e2
+}
 
 #map {
     width: 300px;
