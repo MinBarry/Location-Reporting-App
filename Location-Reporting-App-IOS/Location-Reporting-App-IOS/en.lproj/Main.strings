@@ -1,0 +1,63 @@
+
+/* Class = "UITabBarItem"; title = "Edit Account"; ObjectID = "018-Dq-uxJ"; */
+"018-Dq-uxJ.title" = "Edit Account";
+
+/* Class = "UITextField"; placeholder = "Firstname"; ObjectID = "27v-yr-uT8"; */
+"27v-yr-uT8.placeholder" = "Firstname";
+
+/* Class = "UITabBarItem"; title = "New Report"; ObjectID = "2Re-b5-rWg"; */
+"2Re-b5-rWg.title" = "New Report";
+
+/* Class = "UIButton"; normalTitle = "Login"; ObjectID = "4aY-zc-uHo"; */
+"4aY-zc-uHo.normalTitle" = "Login";
+
+/* Class = "UIBarButtonItem"; title = "Logout"; ObjectID = "5Ke-Om-iZb"; */
+"5Ke-Om-iZb.title" = "Logout";
+
+/* Class = "UITextField"; placeholder = "Confirm password"; ObjectID = "8PF-fS-0kt"; */
+"8PF-fS-0kt.placeholder" = "Confirm password";
+
+/* Class = "UITextField"; placeholder = "Password"; ObjectID = "HbM-XN-K5j"; */
+"HbM-XN-K5j.placeholder" = "Password";
+
+/* Class = "UILabel"; text = " "; ObjectID = "Kgw-Uw-Zg9"; */
+"Kgw-Uw-Zg9.text" = " ";
+
+/* Class = "UILabel"; text = " "; ObjectID = "May-YH-FUU"; */
+"May-YH-FUU.text" = " ";
+
+/* Class = "UITextField"; placeholder = "Email"; ObjectID = "Nfo-qE-BAZ"; */
+"Nfo-qE-BAZ.placeholder" = "Email";
+
+/* Class = "UIButton"; normalTitle = "Register"; ObjectID = "Nxv-ZW-3M0"; */
+"Nxv-ZW-3M0.normalTitle" = "Register";
+
+/* Class = "UITextField"; placeholder = "Username"; ObjectID = "PxZ-Re-15c"; */
+"PxZ-Re-15c.placeholder" = "Username";
+
+/* Class = "UIButton"; normalTitle = "Register"; ObjectID = "RgD-Dp-2QH"; */
+"RgD-Dp-2QH.normalTitle" = "Register";
+
+/* Class = "UITextField"; placeholder = "Lastname"; ObjectID = "Sxg-Qc-fjp"; */
+"Sxg-Qc-fjp.placeholder" = "Lastname";
+
+/* Class = "UILabel"; text = "Location Reporting App"; ObjectID = "Wxk-aK-L5K"; */
+"Wxk-aK-L5K.text" = "Location Reporting App";
+
+/* Class = "UITextField"; placeholder = "Email"; ObjectID = "ZzX-6a-AlU"; */
+"ZzX-6a-AlU.placeholder" = "Email";
+
+/* Class = "UILabel"; text = "Type:"; ObjectID = "a5u-9q-uRY"; */
+"a5u-9q-uRY.text" = "Type:";
+
+/* Class = "UILabel"; text = "Description:"; ObjectID = "djq-8v-pVC"; */
+"djq-8v-pVC.text" = "Description:";
+
+/* Class = "UITextField"; placeholder = "Password"; ObjectID = "h9s-OS-vgK"; */
+"h9s-OS-vgK.placeholder" = "Password";
+
+/* Class = "UITextView"; text = "text "; ObjectID = "n2j-yH-cgg"; */
+"n2j-yH-cgg.text" = "text ";
+
+/* Class = "UILabel"; text = "Login"; ObjectID = "tR1-V0-SPu"; */
+"tR1-V0-SPu.text" = "Login";

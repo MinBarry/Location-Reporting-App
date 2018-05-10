@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  Location-Reporting-App-IOS
 //
-//  Created by Minna on 5/8/18.
+//  Created by Minna Barry on 5/8/18.
 //  Copyright © 2018 Minna. All rights reserved.
 //
 
