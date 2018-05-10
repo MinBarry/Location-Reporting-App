@@ -1,11 +1,13 @@
 package minna.location_reporting_app_android;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Address;
@@ -14,6 +16,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -77,8 +81,8 @@ public class NewReportActivity extends AppCompatActivity {
     private RequestQueue mQueue;
     private UserSession mSession;
     private Bitmap mSelectedImage;
+    AlertDialog.Builder mPictureDialog;
 
-    //todo: ask for camera and file permissions
     //TODO: fix - selected type gets reset but radio button is still selected
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,8 +129,10 @@ public class NewReportActivity extends AppCompatActivity {
         getLocatoion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(NewReportActivity.this, MapsActivity.class);
-                startActivityForResult(intent, CURRENT_LOCATION_REQUEST_CODE);
+                if(checkPermission(CURRENT_LOCATION_REQUEST_CODE, Manifest.permission.ACCESS_FINE_LOCATION)){
+                    Intent intent = new Intent(NewReportActivity.this, MapsActivity.class);
+                    startActivityForResult(intent, CURRENT_LOCATION_REQUEST_CODE);
+                }
             }
         });
 
@@ -135,8 +141,8 @@ public class NewReportActivity extends AppCompatActivity {
         imageSelect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(NewReportActivity.this);
-                builder.setTitle("Choose an option")
+                mPictureDialog = new AlertDialog.Builder(NewReportActivity.this);
+                mPictureDialog.setTitle("Choose an option")
                         .setItems(R.array.image_picker, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 // The 'which' argument contains the index position
@@ -144,7 +150,10 @@ public class NewReportActivity extends AppCompatActivity {
                                 switch (which){
                                     case 0:
                                         //TODO: check camera permission
-                                        dispatchTakePictureIntent();
+                                        if(checkPermission(TAKE_PICTURE_REQUEST_CODE, Manifest.permission.CAMERA)){
+                                            mErrorView.setText("Camera permission granted");
+                                            dispatchTakePictureIntent();
+                                        }
                                         break;
                                     case 1:
                                         Intent pickPhoto = new Intent(Intent.ACTION_PICK,
@@ -155,8 +164,12 @@ public class NewReportActivity extends AppCompatActivity {
                             }
                         });
                 //TODO: check storage permission
-                builder.create();
-                builder.show();
+                if(checkPermission(CHOOSE_PICTURE_REQUEST_CODE, Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                    mErrorView.setText("storage permission granted");
+                    mPictureDialog.create();
+                    mPictureDialog.show();
+                }
+
             }
         });
         // setup remove picture button
@@ -176,7 +189,10 @@ public class NewReportActivity extends AppCompatActivity {
         qrCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(new Intent(NewReportActivity.this, QrReader.class), 3);
+                if(checkPermission(QR_CODE_REQUEST_CODE, Manifest.permission.CAMERA)){
+                    mErrorView.setText("qr Camera permission granted");
+                    startActivityForResult(new Intent(NewReportActivity.this, QrReader.class), 3);
+                }
             }
         });
 
@@ -500,6 +516,44 @@ public class NewReportActivity extends AppCompatActivity {
         } else {
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        }
+    }
+
+    private boolean checkPermission(int code, String permission){
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                permission) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{permission},code);
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        if (grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            switch (requestCode) {
+                case CURRENT_LOCATION_REQUEST_CODE: {
+                    Intent intent = new Intent(NewReportActivity.this, MapsActivity.class);
+                    startActivityForResult(intent, CURRENT_LOCATION_REQUEST_CODE);
+                    break;
+                }
+                case CHOOSE_PICTURE_REQUEST_CODE: {
+                    mPictureDialog.create();
+                    mPictureDialog.show();
+                    break;
+                }
+                case TAKE_PICTURE_REQUEST_CODE: {
+                    dispatchTakePictureIntent();
+                    break;
+                }
+                case QR_CODE_REQUEST_CODE: {
+                    startActivityForResult(new Intent(NewReportActivity.this, QrReader.class), 3);
+                    break;
+                }
+
+            }
         }
     }
 

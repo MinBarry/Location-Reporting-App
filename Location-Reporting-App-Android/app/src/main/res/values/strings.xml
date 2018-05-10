@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Location Reporting App</string>
+    <!-- google client ID for google login -->
     <string name="server_client_id">333088297286-th7rtelj0mfl2ihqkkl1eb819enj6083.apps.googleusercontent.com</string>
+    <!-- Facebook app ID for Facebook login -->
     <string name="facebook_app_id">166468394185099</string>
     <string name="fb_login_protocol_scheme">fb166468394185099</string>
 
@@ -29,26 +31,26 @@
 
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_maps">Get Location</string>
-    <string name="host_url">http://10.0.2.2:52585</string>
+    <string name="host_url">https://minna-location-api.herokuapp.com</string>
 
-    <string-array name="types_array">
-        <item>Other</item>
-        <item>Flood</item>
-        <item>Fire</item>
-        <item>Road Accident</item>
-        <item>Burglary</item>
-        <item>Violence</item>
-    </string-array>
+     <string-array name="types_array">
+         <item>Other</item>
+         <item>Flood</item>
+         <item>Fire</item>
+         <item>Road Accident</item>
+         <item>Burglary</item>
+         <item>Violence</item>
+     </string-array>
 
-    <string-array name="quality_array">
-        <item>Low</item>
-        <item>Normal</item>
-        <item>Best</item>
-    </string-array>
+     <string-array name="quality_array">
+         <item>Low</item>
+         <item>Normal</item>
+         <item>Best</item>
+     </string-array>
 
-    <string-array name="image_picker">
-        <item>Take a new picture</item>
-        <item>Choose a picture from gallery</item>
-    </string-array>
+     <string-array name="image_picker">
+         <item>Take a new picture</item>
+         <item>Choose a picture from gallery</item>
+     </string-array>
 
-</resources>
+ </resources>

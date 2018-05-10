@@ -30,7 +30,8 @@
                 android:id="@+id/textView2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:text="TextView"
+                android:visibility="gone" />
 
             <EditText
                 android:id="@+id/email"
@@ -93,7 +94,8 @@
                 android:layout_marginTop="10dp"
                 android:ems="10"
                 android:hint="Phone "
-                android:inputType="phone" />
+                android:inputType="phone"
+                android:visibility="gone" />
 
             <EditText
                 android:id="@+id/address1"
@@ -102,7 +104,8 @@
                 android:layout_marginTop="10dp"
                 android:ems="10"
                 android:hint="Address Line 1"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:visibility="gone" />
 
             <EditText
                 android:id="@+id/address2"
@@ -111,7 +114,8 @@
                 android:layout_marginTop="10dp"
                 android:ems="10"
                 android:hint="Address Line 2"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:visibility="gone" />
 
             <EditText
                 android:id="@+id/province"
@@ -120,7 +124,8 @@
                 android:layout_marginTop="10dp"
                 android:ems="10"
                 android:hint="Province"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:visibility="gone" />
 
             <EditText
                 android:id="@+id/postalCode"
@@ -129,7 +134,8 @@
                 android:layout_marginTop="10dp"
                 android:ems="10"
                 android:hint="Postal Code"
-                android:inputType="textPostalAddress" />
+                android:inputType="textPostalAddress"
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/submit"

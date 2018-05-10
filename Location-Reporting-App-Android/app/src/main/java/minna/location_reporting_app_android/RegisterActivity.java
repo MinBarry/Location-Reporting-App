@@ -163,6 +163,7 @@ public class RegisterActivity extends AppCompatActivity {
                             alertDialog.show();
                         } else {
                             try {
+                                mtextView.setText(new String(error.networkResponse.data, "UTF-8"));
                                 JSONObject responseData = new JSONObject(new String(error.networkResponse.data,"UTF-8"));
                                 if(responseData.has("response") && responseData.getJSONObject("response").has("errors")) {
                                     if (responseData.getJSONObject("response").getJSONObject("errors").has("email")) {
@@ -173,16 +174,19 @@ public class RegisterActivity extends AppCompatActivity {
                                     } else if (responseData.getJSONObject("response").getJSONObject("errors").has("username")) {
                                         mUsernameView.setError(responseData.getJSONObject("response").getJSONObject("errors").getString("username"));
                                     }
-
-                                    //TODO: remove
-                                    mtextView.setText(new String(error.networkResponse.data, "UTF-8"));
                                 }
-                            } catch (UnsupportedEncodingException e) {
-                                //TODO: remove
-                                mtextView.setText("Something went wrong");
-                            } catch (JSONException e) {
-                                //TODO: remove
-                                mtextView.setText("Something went wrong with json");
+                            } catch (Exception e) {
+                                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RegisterActivity.this);
+                                alertDialogBuilder.setMessage("There was a problem, please try again later.");
+                                alertDialogBuilder.setPositiveButton("Ok",
+                                        new DialogInterface.OnClickListener(){
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                            }
+                                        });
+                                AlertDialog alertDialog = alertDialogBuilder.create();
+                                alertDialog.show();
                             }
                         }
                     }
@@ -233,7 +237,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private boolean isNotEmpty(TextView view){
-        if(view.getText().toString().length() <= 1){
+        if(view.getText().toString().length() < 1){
             view.setError("This field is required");
             return false;
         }
