@@ -51,7 +51,7 @@ def get_reports_list():
     reports = Report.query.filter()
     # Filter by type
     if 'type' in request.args:
-        reports = Report.query.filter(Report.type == request.args.get('type'))
+        reports = reports.filter(Report.type == request.args.get('type'))
     # Filter by distance
     if 'distance' in request.args:
         distance = float(request.args.get('distance'))
@@ -66,7 +66,7 @@ def get_reports_list():
             abort(400)
 
         bnd = bound(lat, lng, distance)
-        reports = Report.query.filter((Report.lat >= bnd['S']['lat']) & (Report.lat <= bnd['N']['lat'])
+        reports = reports.filter((Report.lat >= bnd['S']['lat']) & (Report.lat <= bnd['N']['lat'])
                                       & (Report.lng >= bnd['W']['lng']) & (Report.lng <= bnd['E']['lng']))
     # TODO: Filter by user
 

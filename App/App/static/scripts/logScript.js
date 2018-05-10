@@ -25,11 +25,9 @@ $(function () {
 function requestReportsList(page, type, distance) {
     url = "/api/reports?perpage=20&page=" + page
     if (types.includes(type)) {
-        console.log("setting type")
         url = url + "&type="+ type 
     }
     if (distance >= 10) {
-        console.log("setting dis")
         url = url + "&distance=" + distance
     }
     $(".pagination").empty()
@@ -37,7 +35,6 @@ function requestReportsList(page, type, distance) {
     $.getJSON($SCRIPT_ROOT + url,
         function (data, status_code) {
             reportsList = data.reports
-            console.log(data.reports)
             usersList = data.users
             totalPages = data.pages
             displayReports(reportsList, usersList)
@@ -49,13 +46,15 @@ function requestReportsList(page, type, distance) {
                 $(this).addClass("active")
                 latlng = getLatLng($(this).attr("id"), reportsList)
                 //TODO: Don't display map if lat and lng == 0
-                map.setCenter(latlng)
-                marker.setPosition(latlng)
-                map.setZoom(15)
-                $(this).next().show()
-                $(this).next().addClass("active")
-                $(this).next().find(".reportMap").append(map.getDiv())
-                $("#map").show()
+                if (latlng.lat != 0 && latlng.lng != 0) {
+                    map.setCenter(latlng)
+                    marker.setPosition(latlng)
+                    map.setZoom(15)
+                    $(this).next().show()
+                    $(this).next().addClass("active")
+                    $(this).next().find(".reportMap").append(map.getDiv())
+                    $("#map").show()
+                }
             })
         }
     )
@@ -74,7 +73,6 @@ function displayReports(reports, users) {
                 "data:image/jpeg;base64," + report.image_path + "'class='image'></div></td>"
         }
         $("#reportsView").append(
-            console.log(report)+
             "<tr class='singleReport' id=" + report.id + ">" +
             "<td>" + report.id + "</td>" +
             "<td>" + user.username + "</td>" +
