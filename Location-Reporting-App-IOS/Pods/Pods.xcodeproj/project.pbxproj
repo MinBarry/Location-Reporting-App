@@ -9,19 +9,19 @@
 /* Begin PBXBuildFile section */
 		0348186C1D145647C318F5EB138B4C7A /* Pods-Location-Reporting-App-IOSTests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2441EFFEF65AEC0B18FE9D7B2787DF68 /* Pods-Location-Reporting-App-IOSTests-dummy.m */; };
 		07102E82A44BA5C2DFEF908A19B20769 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A16F4CFC63FAC439D7A04994F579A03 /* Foundation.framework */; };
-		361A7CB2DD28A78F3A27B457A14E55EB /* SwiftKeychainWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = B1A90FBA3C2B1F114C7F29C2C41D5389 /* SwiftKeychainWrapper.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		361A7CB2DD28A78F3A27B457A14E55EB /* SwiftKeychainWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = A5A6545E3A44C0AA32E525204EDC52D4 /* SwiftKeychainWrapper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3D64042266315C2AF130120EFE30623C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A16F4CFC63FAC439D7A04994F579A03 /* Foundation.framework */; };
-		4ED81B50045BE56411D854A1F2908D2F /* KeychainItemAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A21F52E816D401B1E03FCC639291FDF /* KeychainItemAccessibility.swift */; };
+		4ED81B50045BE56411D854A1F2908D2F /* KeychainItemAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D2314EE78166008AE1E35484C11F648 /* KeychainItemAccessibility.swift */; };
 		55C99A1A799FCC8E581230A5DE81C016 /* Pods-Location-Reporting-App-IOS-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = E1DF0E55DD08437DCF34AFEDC53D9089 /* Pods-Location-Reporting-App-IOS-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5ADAE30360F32DD6E6C6470F2E4C2FE7 /* Pods-Location-Reporting-App-IOSUITests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = F4AA04E8B98D5D314C23B2DCB58E71B0 /* Pods-Location-Reporting-App-IOSUITests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		61C336F773881683B0FF971A295AC296 /* Pods-Location-Reporting-App-IOSTests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 077666BD1CF9E19D4A46757AFBA91A74 /* Pods-Location-Reporting-App-IOSTests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		84F40ABE6AB63D479C51D58BEC739325 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A16F4CFC63FAC439D7A04994F579A03 /* Foundation.framework */; };
 		95BF70380AE19294949697275AE2B69B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A16F4CFC63FAC439D7A04994F579A03 /* Foundation.framework */; };
-		ABEDCACEF7DCCC9E36EA916633B3AF85 /* SwiftKeychainWrapper-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 78A3817E35E45B79E1D8982A19F69A25 /* SwiftKeychainWrapper-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		ABEDCACEF7DCCC9E36EA916633B3AF85 /* SwiftKeychainWrapper-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = B49F59CC51F2387968E5AF251A9831F8 /* SwiftKeychainWrapper-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C313D8DC4672029BA590D2E66D96F1C1 /* Pods-Location-Reporting-App-IOS-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 62018CA63659C9C88785B2EE749B99E5 /* Pods-Location-Reporting-App-IOS-dummy.m */; };
 		D0346F83F4A098F7644593FF2D501E8C /* Pods-Location-Reporting-App-IOSUITests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B9C375EDF4C39082F8394958901F81EA /* Pods-Location-Reporting-App-IOSUITests-dummy.m */; };
-		DA09A37B3D0E53283ECB7A7D536E766B /* KeychainWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02DE889CB219027DCFB3F28689F86D7 /* KeychainWrapper.swift */; };
-		F6CB7FFE406FFF024A2F5FFBE7FF1908 /* SwiftKeychainWrapper-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 46048A65E739B3EE90761329C3604475 /* SwiftKeychainWrapper-dummy.m */; };
+		DA09A37B3D0E53283ECB7A7D536E766B /* KeychainWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EAE1C68CF886C51B0D91F2B926A1DD9 /* KeychainWrapper.swift */; };
+		F6CB7FFE406FFF024A2F5FFBE7FF1908 /* SwiftKeychainWrapper-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = D30DAE121569B7F50E6A9FF6B190B1F1 /* SwiftKeychainWrapper-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,42 +51,48 @@
 /* Begin PBXFileReference section */
 		04A0CB320BAAB1585C24DC51CC678AB1 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		077666BD1CF9E19D4A46757AFBA91A74 /* Pods-Location-Reporting-App-IOSTests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-Location-Reporting-App-IOSTests-umbrella.h"; sourceTree = "<group>"; };
+		147E1D9585536C5584414FA631CC1161 /* GoogleMaps.bundle */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "wrapper.plug-in"; name = GoogleMaps.bundle; path = Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle; sourceTree = "<group>"; };
 		1729006E88455C9741E8D0E187A6AD49 /* Pods-Location-Reporting-App-IOSUITests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-Location-Reporting-App-IOSUITests-acknowledgements.plist"; sourceTree = "<group>"; };
 		17B9903A8F5061A8582B74976DB1B7B4 /* Pods_Location_Reporting_App_IOSUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_Location_Reporting_App_IOSUITests.framework; path = "Pods-Location-Reporting-App-IOSUITests.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
-		18AA3B09C9566D69297C8FB5EB326932 /* SwiftKeychainWrapper.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SwiftKeychainWrapper.xcconfig; sourceTree = "<group>"; };
-		2269EA45D1597DD0CE6660AFCE57F0B9 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1DD61D90911F301974C47F68745C32B7 /* GoogleMapsCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMapsCore.framework; path = Maps/Frameworks/GoogleMapsCore.framework; sourceTree = "<group>"; };
 		2441EFFEF65AEC0B18FE9D7B2787DF68 /* Pods-Location-Reporting-App-IOSTests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-Location-Reporting-App-IOSTests-dummy.m"; sourceTree = "<group>"; };
 		28A1ED70F4D8D50931B5229DE849B49B /* Pods_Location_Reporting_App_IOSTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_Location_Reporting_App_IOSTests.framework; path = "Pods-Location-Reporting-App-IOSTests.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B897188D83087D1A1CB7585B1BC75FD /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		359918E3266E1732C992EEC4F4F89A7E /* SwiftKeychainWrapper.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = SwiftKeychainWrapper.modulemap; sourceTree = "<group>"; };
 		3A5EA88C57511DF4C0543D8A7152DAFF /* Pods-Location-Reporting-App-IOS-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-Location-Reporting-App-IOS-frameworks.sh"; sourceTree = "<group>"; };
 		4063C564B08271D6686A23326F0A98DE /* Pods-Location-Reporting-App-IOSUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-Location-Reporting-App-IOSUITests.release.xcconfig"; sourceTree = "<group>"; };
-		42C4EF419B0C8170C9E0DC70EDAFD00B /* SwiftKeychainWrapper-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SwiftKeychainWrapper-prefix.pch"; sourceTree = "<group>"; };
-		46048A65E739B3EE90761329C3604475 /* SwiftKeychainWrapper-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SwiftKeychainWrapper-dummy.m"; sourceTree = "<group>"; };
 		46662CBEEC15F9311EA8935DD97DBA27 /* Pods-Location-Reporting-App-IOSTests-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-Location-Reporting-App-IOSTests-frameworks.sh"; sourceTree = "<group>"; };
 		468A7AB683D21A9903757A2B735CEF6C /* Pods-Location-Reporting-App-IOS-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-Location-Reporting-App-IOS-acknowledgements.markdown"; sourceTree = "<group>"; };
+		4EAE1C68CF886C51B0D91F2B926A1DD9 /* KeychainWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = KeychainWrapper.swift; path = SwiftKeychainWrapper/KeychainWrapper.swift; sourceTree = "<group>"; };
 		4F36BFD8596B195CA7DBE0E3371C44B1 /* Pods-Location-Reporting-App-IOSTests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-Location-Reporting-App-IOSTests.modulemap"; sourceTree = "<group>"; };
 		50A6B3E7A79A3D651F33D240E173DD40 /* Pods_Location_Reporting_App_IOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_Location_Reporting_App_IOS.framework; path = "Pods-Location-Reporting-App-IOS.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
 		533993F7E332579F13812CFCA367D0A9 /* Pods-Location-Reporting-App-IOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-Location-Reporting-App-IOS.release.xcconfig"; sourceTree = "<group>"; };
+		57BD96E5B2D3CFD064E351964C03ABE5 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5A16F4CFC63FAC439D7A04994F579A03 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.3.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
-		5A21F52E816D401B1E03FCC639291FDF /* KeychainItemAccessibility.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = KeychainItemAccessibility.swift; path = SwiftKeychainWrapper/KeychainItemAccessibility.swift; sourceTree = "<group>"; };
 		62018CA63659C9C88785B2EE749B99E5 /* Pods-Location-Reporting-App-IOS-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-Location-Reporting-App-IOS-dummy.m"; sourceTree = "<group>"; };
+		646D37CA2C05CD1249AC035E5C04AB48 /* SwiftKeychainWrapper-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SwiftKeychainWrapper-prefix.pch"; sourceTree = "<group>"; };
 		673CDE9A1CC9BBB53ABA6D4D58B2A07B /* SwiftKeychainWrapper.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = SwiftKeychainWrapper.framework; path = SwiftKeychainWrapper.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		78A3817E35E45B79E1D8982A19F69A25 /* SwiftKeychainWrapper-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SwiftKeychainWrapper-umbrella.h"; sourceTree = "<group>"; };
+		6D9CEBF6473BFF1DF85C4D235BE91557 /* SwiftKeychainWrapper.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = SwiftKeychainWrapper.modulemap; sourceTree = "<group>"; };
+		7D2314EE78166008AE1E35484C11F648 /* KeychainItemAccessibility.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = KeychainItemAccessibility.swift; path = SwiftKeychainWrapper/KeychainItemAccessibility.swift; sourceTree = "<group>"; };
+		917783BBF2361E2975A5CB9EF13E3DF3 /* GoogleMaps.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMaps.framework; path = Maps/Frameworks/GoogleMaps.framework; sourceTree = "<group>"; };
 		93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		98309ECFC0220FDCF6F0EB3CE50A0065 /* Pods-Location-Reporting-App-IOSUITests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-Location-Reporting-App-IOSUITests.modulemap"; sourceTree = "<group>"; };
+		9E797E2E857E66DA6161C7533C998DC7 /* GooglePlaces.bundle */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "wrapper.plug-in"; name = GooglePlaces.bundle; path = Frameworks/GooglePlaces.framework/Resources/GooglePlaces.bundle; sourceTree = "<group>"; };
 		9F417861DA522BEA38A178B13CAC5CDD /* Pods-Location-Reporting-App-IOSUITests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-Location-Reporting-App-IOSUITests-acknowledgements.markdown"; sourceTree = "<group>"; };
 		A0E979BB983DCAE9CC787F22CFFD87AA /* Pods-Location-Reporting-App-IOS-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-Location-Reporting-App-IOS-resources.sh"; sourceTree = "<group>"; };
+		A5A6545E3A44C0AA32E525204EDC52D4 /* SwiftKeychainWrapper.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SwiftKeychainWrapper.h; path = SwiftKeychainWrapper/SwiftKeychainWrapper.h; sourceTree = "<group>"; };
 		B06A8E02EBF333020E029248E7670288 /* Pods-Location-Reporting-App-IOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-Location-Reporting-App-IOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		B0FFA84E09F7CF62F13B3D47365AC74A /* Pods-Location-Reporting-App-IOS.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-Location-Reporting-App-IOS.modulemap"; sourceTree = "<group>"; };
-		B1A90FBA3C2B1F114C7F29C2C41D5389 /* SwiftKeychainWrapper.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SwiftKeychainWrapper.h; path = SwiftKeychainWrapper/SwiftKeychainWrapper.h; sourceTree = "<group>"; };
 		B2D22DB04E6723E302AFF89855D9A421 /* Pods-Location-Reporting-App-IOS-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-Location-Reporting-App-IOS-acknowledgements.plist"; sourceTree = "<group>"; };
+		B49F59CC51F2387968E5AF251A9831F8 /* SwiftKeychainWrapper-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SwiftKeychainWrapper-umbrella.h"; sourceTree = "<group>"; };
 		B9C375EDF4C39082F8394958901F81EA /* Pods-Location-Reporting-App-IOSUITests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-Location-Reporting-App-IOSUITests-dummy.m"; sourceTree = "<group>"; };
 		BFC7C1254BE16E9457D8A5D728D9A34F /* Pods-Location-Reporting-App-IOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-Location-Reporting-App-IOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		C139D385E9C4E2B6D28D5EDE693BD440 /* Pods-Location-Reporting-App-IOSUITests-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-Location-Reporting-App-IOSUITests-frameworks.sh"; sourceTree = "<group>"; };
-		D02DE889CB219027DCFB3F28689F86D7 /* KeychainWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = KeychainWrapper.swift; path = SwiftKeychainWrapper/KeychainWrapper.swift; sourceTree = "<group>"; };
+		CFAC6C44DEB6603C026A655D78ABCC82 /* SwiftKeychainWrapper.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SwiftKeychainWrapper.xcconfig; sourceTree = "<group>"; };
+		D04C9B21D7CD639D19B4DB2098E2C1F5 /* GoogleMapsBase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMapsBase.framework; path = Base/Frameworks/GoogleMapsBase.framework; sourceTree = "<group>"; };
 		D187D587E001D7AEC6098D55742955F2 /* Pods-Location-Reporting-App-IOSUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-Location-Reporting-App-IOSUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		D30DAE121569B7F50E6A9FF6B190B1F1 /* SwiftKeychainWrapper-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SwiftKeychainWrapper-dummy.m"; sourceTree = "<group>"; };
 		DF57B6E60A5A391616CFC1477587ACB0 /* Pods-Location-Reporting-App-IOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-Location-Reporting-App-IOS.debug.xcconfig"; sourceTree = "<group>"; };
+		DFB16B9469A2B9EB7CC4851F4CDE74D2 /* GooglePlaces.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GooglePlaces.framework; path = Frameworks/GooglePlaces.framework; sourceTree = "<group>"; };
 		DFECC5B44FC02B45842581C8A63D51E3 /* Pods-Location-Reporting-App-IOSTests-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-Location-Reporting-App-IOSTests-resources.sh"; sourceTree = "<group>"; };
 		E186B3ECBC5F3E558368F23AEE0315EA /* Pods-Location-Reporting-App-IOSUITests-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-Location-Reporting-App-IOSUITests-resources.sh"; sourceTree = "<group>"; };
 		E1DF0E55DD08437DCF34AFEDC53D9089 /* Pods-Location-Reporting-App-IOS-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-Location-Reporting-App-IOS-umbrella.h"; sourceTree = "<group>"; };
@@ -132,18 +138,32 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0958F96BB3483550DA4C15FA93B8DDC9 /* Support Files */ = {
+		0088D0EE450111A8CC9734B53ADF2215 /* GooglePlaces */ = {
 			isa = PBXGroup;
 			children = (
-				2269EA45D1597DD0CE6660AFCE57F0B9 /* Info.plist */,
-				359918E3266E1732C992EEC4F4F89A7E /* SwiftKeychainWrapper.modulemap */,
-				18AA3B09C9566D69297C8FB5EB326932 /* SwiftKeychainWrapper.xcconfig */,
-				46048A65E739B3EE90761329C3604475 /* SwiftKeychainWrapper-dummy.m */,
-				42C4EF419B0C8170C9E0DC70EDAFD00B /* SwiftKeychainWrapper-prefix.pch */,
-				78A3817E35E45B79E1D8982A19F69A25 /* SwiftKeychainWrapper-umbrella.h */,
+				D22C5A4FF03772A48BCEB8E210C2CD58 /* Frameworks */,
+				57D0E68410C1ABC0749D3076FC9F9DAD /* Resources */,
 			);
-			name = "Support Files";
-			path = "../Target Support Files/SwiftKeychainWrapper";
+			name = GooglePlaces;
+			path = GooglePlaces;
+			sourceTree = "<group>";
+		};
+		1A412853E71CEDC9D57C97EA3DA3FCB5 /* GoogleMaps */ = {
+			isa = PBXGroup;
+			children = (
+				1F5EDB67D5CD49DB1BEE65D1CE8AF677 /* Base */,
+				98105947C275269C2A425EC1C19F1A5B /* Maps */,
+			);
+			name = GoogleMaps;
+			path = GoogleMaps;
+			sourceTree = "<group>";
+		};
+		1F5EDB67D5CD49DB1BEE65D1CE8AF677 /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				B99DBACAEE45B51B5DD3FF5FC27DB054 /* Frameworks */,
+			);
+			name = Base;
 			sourceTree = "<group>";
 		};
 		25907210030D078E203034A0F61CA7F6 /* Pods-Location-Reporting-App-IOSUITests */ = {
@@ -173,6 +193,14 @@
 				673CDE9A1CC9BBB53ABA6D4D58B2A07B /* SwiftKeychainWrapper.framework */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		57D0E68410C1ABC0749D3076FC9F9DAD /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				9E797E2E857E66DA6161C7533C998DC7 /* GooglePlaces.bundle */,
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 		585FE78ACD61C138C0B21218ED2149A4 /* Pods-Location-Reporting-App-IOS */ = {
@@ -211,6 +239,20 @@
 			path = "Target Support Files/Pods-Location-Reporting-App-IOSTests";
 			sourceTree = "<group>";
 		};
+		5DAB80866E140C027029D53C9C123F76 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				57BD96E5B2D3CFD064E351964C03ABE5 /* Info.plist */,
+				6D9CEBF6473BFF1DF85C4D235BE91557 /* SwiftKeychainWrapper.modulemap */,
+				CFAC6C44DEB6603C026A655D78ABCC82 /* SwiftKeychainWrapper.xcconfig */,
+				D30DAE121569B7F50E6A9FF6B190B1F1 /* SwiftKeychainWrapper-dummy.m */,
+				646D37CA2C05CD1249AC035E5C04AB48 /* SwiftKeychainWrapper-prefix.pch */,
+				B49F59CC51F2387968E5AF251A9831F8 /* SwiftKeychainWrapper-umbrella.h */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/SwiftKeychainWrapper";
+			sourceTree = "<group>";
+		};
 		5E0D919E635D23B70123790B8308F8EF /* iOS */ = {
 			isa = PBXGroup;
 			children = (
@@ -224,18 +266,28 @@
 			children = (
 				93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */,
 				BC3CA7F9E30CC8F7E2DD044DD34432FC /* Frameworks */,
-				A0DC98CF63826F78B027F4AD3A6E1A4D /* Pods */,
+				ECA5B395C61FE4F9E267C77B6335B434 /* Pods */,
 				25D238E5357A0C5332ED56E063B9D504 /* Products */,
 				AE1F0708AC63D3E04E3FC48428BDA02C /* Targets Support Files */,
 			);
 			sourceTree = "<group>";
 		};
-		A0DC98CF63826F78B027F4AD3A6E1A4D /* Pods */ = {
+		98105947C275269C2A425EC1C19F1A5B /* Maps */ = {
 			isa = PBXGroup;
 			children = (
-				B0CAC6EA9F0C2F55BADB6FB344332372 /* SwiftKeychainWrapper */,
+				A8DF4D2D98E8AF60126B04229CE322BD /* Frameworks */,
+				E565C1D5278EC8913D07B42529C69E17 /* Resources */,
 			);
-			name = Pods;
+			name = Maps;
+			sourceTree = "<group>";
+		};
+		A8DF4D2D98E8AF60126B04229CE322BD /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				917783BBF2361E2975A5CB9EF13E3DF3 /* GoogleMaps.framework */,
+				1DD61D90911F301974C47F68745C32B7 /* GoogleMapsCore.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		AE1F0708AC63D3E04E3FC48428BDA02C /* Targets Support Files */ = {
@@ -248,16 +300,12 @@
 			name = "Targets Support Files";
 			sourceTree = "<group>";
 		};
-		B0CAC6EA9F0C2F55BADB6FB344332372 /* SwiftKeychainWrapper */ = {
+		B99DBACAEE45B51B5DD3FF5FC27DB054 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				5A21F52E816D401B1E03FCC639291FDF /* KeychainItemAccessibility.swift */,
-				D02DE889CB219027DCFB3F28689F86D7 /* KeychainWrapper.swift */,
-				B1A90FBA3C2B1F114C7F29C2C41D5389 /* SwiftKeychainWrapper.h */,
-				0958F96BB3483550DA4C15FA93B8DDC9 /* Support Files */,
+				D04C9B21D7CD639D19B4DB2098E2C1F5 /* GoogleMapsBase.framework */,
 			);
-			name = SwiftKeychainWrapper;
-			path = SwiftKeychainWrapper;
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		BC3CA7F9E30CC8F7E2DD044DD34432FC /* Frameworks */ = {
@@ -266,6 +314,44 @@
 				5E0D919E635D23B70123790B8308F8EF /* iOS */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D22C5A4FF03772A48BCEB8E210C2CD58 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				DFB16B9469A2B9EB7CC4851F4CDE74D2 /* GooglePlaces.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E565C1D5278EC8913D07B42529C69E17 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				147E1D9585536C5584414FA631CC1161 /* GoogleMaps.bundle */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		ECA5B395C61FE4F9E267C77B6335B434 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				1A412853E71CEDC9D57C97EA3DA3FCB5 /* GoogleMaps */,
+				0088D0EE450111A8CC9734B53ADF2215 /* GooglePlaces */,
+				FA02531E364BE4102F22B511BFD5E8E2 /* SwiftKeychainWrapper */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		FA02531E364BE4102F22B511BFD5E8E2 /* SwiftKeychainWrapper */ = {
+			isa = PBXGroup;
+			children = (
+				7D2314EE78166008AE1E35484C11F648 /* KeychainItemAccessibility.swift */,
+				4EAE1C68CF886C51B0D91F2B926A1DD9 /* KeychainWrapper.swift */,
+				A5A6545E3A44C0AA32E525204EDC52D4 /* SwiftKeychainWrapper.h */,
+				5DAB80866E140C027029D53C9C123F76 /* Support Files */,
+			);
+			name = SwiftKeychainWrapper;
+			path = SwiftKeychainWrapper;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -568,7 +654,7 @@
 		};
 		6267E0FF88554D903B569839EE7DFF4A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 18AA3B09C9566D69297C8FB5EB326932 /* SwiftKeychainWrapper.xcconfig */;
+			baseConfigurationReference = CFAC6C44DEB6603C026A655D78ABCC82 /* SwiftKeychainWrapper.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -757,7 +843,7 @@
 		};
 		B08E6BE2343C345BBB00A459EDB88C94 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 18AA3B09C9566D69297C8FB5EB326932 /* SwiftKeychainWrapper.xcconfig */;
+			baseConfigurationReference = CFAC6C44DEB6603C026A655D78ABCC82 /* SwiftKeychainWrapper.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";

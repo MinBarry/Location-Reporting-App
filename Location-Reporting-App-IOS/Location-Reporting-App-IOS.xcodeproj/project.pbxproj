@@ -11,6 +11,7 @@
 		7782ECA584098275D9BA8552 /* Pods_Location_Reporting_App_IOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66A12D13DBB48278FB650C6C /* Pods_Location_Reporting_App_IOS.framework */; };
 		A8268A9402DF757FE8A8DC06 /* Pods_Location_Reporting_App_IOSTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DF596553051971C89EB4940 /* Pods_Location_Reporting_App_IOSTests.framework */; };
 		BF2C386520A3592C007985DD /* ReportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF2C386420A3592C007985DD /* ReportViewController.swift */; };
+		BF4F8F7820A5E16E003E1471 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF4F8F7720A5E16E003E1471 /* MapViewController.swift */; };
 		BFA04B7320A4A63C00C3701E /* utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA04B7220A4A63C00C3701E /* utils.swift */; };
 		BFF5890620A21E0700B805F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFF5890520A21E0700B805F9 /* AppDelegate.swift */; };
 		BFF5890820A21E0700B805F9 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFF5890720A21E0700B805F9 /* LoginViewController.swift */; };
@@ -47,6 +48,7 @@
 		978EB6CC7898B38D48206AE7 /* Pods_Location_Reporting_App_IOSUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Location_Reporting_App_IOSUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BDDE37A5EECF8222F2F9CF28 /* Pods-Location-Reporting-App-IOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Location-Reporting-App-IOSTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Location-Reporting-App-IOSTests/Pods-Location-Reporting-App-IOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		BF2C386420A3592C007985DD /* ReportViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportViewController.swift; sourceTree = "<group>"; };
+		BF4F8F7720A5E16E003E1471 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		BFA04B7220A4A63C00C3701E /* utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = utils.swift; sourceTree = "<group>"; };
 		BFF5890220A21E0700B805F9 /* Location-Reporting-App-IOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Location-Reporting-App-IOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BFF5890520A21E0700B805F9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -145,6 +147,7 @@
 				BFF5890720A21E0700B805F9 /* LoginViewController.swift */,
 				BFA04B7220A4A63C00C3701E /* utils.swift */,
 				BF2C386420A3592C007985DD /* ReportViewController.swift */,
+				BF4F8F7720A5E16E003E1471 /* MapViewController.swift */,
 				BFF5890920A21E0700B805F9 /* Main.storyboard */,
 				BFF5890C20A21E0800B805F9 /* Assets.xcassets */,
 				BFF5890E20A21E0800B805F9 /* LaunchScreen.storyboard */,
@@ -183,6 +186,7 @@
 				BFF588FF20A21E0700B805F9 /* Frameworks */,
 				BFF5890020A21E0700B805F9 /* Resources */,
 				FA1EA3A0874B7BCC24B5AC29 /* [CP] Embed Pods Frameworks */,
+				CC064B79C529DCD99B4EC62D /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -338,6 +342,26 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		CC064B79C529DCD99B4EC62D /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Location-Reporting-App-IOS/Pods-Location-Reporting-App-IOS-resources.sh",
+				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle",
+				"${PODS_ROOT}/GooglePlaces/Frameworks/GooglePlaces.framework/Resources/GooglePlaces.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMaps.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GooglePlaces.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Location-Reporting-App-IOS/Pods-Location-Reporting-App-IOS-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		DEC4AD952D72F0C65B530B8F /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -384,6 +408,7 @@
 				BFF5890820A21E0700B805F9 /* LoginViewController.swift in Sources */,
 				BF2C386520A3592C007985DD /* ReportViewController.swift in Sources */,
 				BFF5890620A21E0700B805F9 /* AppDelegate.swift in Sources */,
+				BF4F8F7820A5E16E003E1471 /* MapViewController.swift in Sources */,
 				BFA04B7320A4A63C00C3701E /* utils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

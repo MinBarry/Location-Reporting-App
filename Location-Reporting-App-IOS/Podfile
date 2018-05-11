@@ -5,6 +5,8 @@ target 'Location-Reporting-App-IOS' do
   use_frameworks!
 
 pod 'SwiftKeychainWrapper','~>3.0.1'
+pod 'GoogleMaps'
+pod 'GooglePlaces'
 
   # Pods for Location-Reporting-App-IOS
 
@@ -17,5 +19,6 @@ pod 'SwiftKeychainWrapper','~>3.0.1'
     inherit! :search_paths
     # Pods for testing
   end
-
+  
+  
 end

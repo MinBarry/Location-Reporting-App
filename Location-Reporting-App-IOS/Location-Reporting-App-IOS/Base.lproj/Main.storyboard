@@ -71,6 +71,7 @@
                                         </state>
                                         <connections>
                                             <action selector="onRegisterTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="z4K-db-J63"/>
+                                            <segue destination="HWz-4z-Gsx" kind="show" id="1f5-2W-XSI"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -186,7 +187,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="htp-HO-1Vb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="137" y="-528"/>
+            <point key="canvasLocation" x="137" y="-533"/>
         </scene>
         <!--Edit Account-->
         <scene sceneID="ept-dm-0I6">
@@ -213,7 +214,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0Rf-r4-W7n">
-                                <rect key="frame" x="0.0" y="88" width="375" height="641"/>
+                                <rect key="frame" x="0.0" y="88" width="375" height="597"/>
                                 <subviews>
                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="196-eL-Gz0">
                                         <rect key="frame" x="8" y="82" width="327" height="91"/>
@@ -248,6 +249,33 @@
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Location:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eg5-ZO-4MI">
+                                        <rect key="frame" x="9" y="380" width="71" height="21"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Address placeholder" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4Bz-zG-bKK">
+                                        <rect key="frame" x="8" y="409" width="158" height="21"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2PN-Ch-aYp">
+                                        <rect key="frame" x="223" y="438" width="144" height="30"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <state key="normal" title="Scan QR code"/>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uKo-JL-EwJ">
+                                        <rect key="frame" x="9" y="438" width="144" height="30"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <state key="normal" title="Get Current Location"/>
+                                        <connections>
+                                            <segue destination="Xt5-wH-fBo" kind="show" id="dJt-28-hs3"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="wjQ-0C-ILJ" secondAttribute="trailing" id="3Ff-pI-36l"/>
@@ -278,20 +306,37 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="vus-yZ-mvb"/>
                     </view>
+                    <toolbarItems/>
                     <navigationItem key="navigationItem" id="bxU-3O-bsd">
-                        <barButtonItem key="rightBarButtonItem" title="Logout" id="5Ke-Om-iZb">
+                        <barButtonItem key="rightBarButtonItem" title="Item" id="6Z3-Xj-FCb">
                             <connections>
-                                <action selector="onLogoutTapped:" destination="ngI-uJ-fR4" id="jAp-M2-YbW"/>
+                                <action selector="onLogout:" destination="ngI-uJ-fR4" id="bQx-ea-uKl"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <segue destination="BYZ-38-t0r" kind="show" identifier="logoutSegue" id="Fkw-dR-y4S"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zw8-8s-gnN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2581.5999999999999" y="-528.32512315270935"/>
+            <point key="canvasLocation" x="1785" y="-528"/>
+        </scene>
+        <!--Map View Controller-->
+        <scene sceneID="7WX-Hc-M6u">
+            <objects>
+                <viewController storyboardIdentifier="mapsView" id="Xt5-wH-fBo" customClass="MapViewController" customModule="Location_Reporting_App_IOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="g2X-y2-igQ">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="aPr-k8-XrK"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Nt7-Wh-ND7" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2554" y="-528"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="vTb-Rz-GQJ">
@@ -328,7 +373,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bDl-aD-zkT" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1785" y="-528"/>
+            <point key="canvasLocation" x="924" y="-528"/>
         </scene>
     </scenes>
 </document>

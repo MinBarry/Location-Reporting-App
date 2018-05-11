@@ -43,7 +43,10 @@ class LoginViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         if isUserLoggedin() {
-            self.performSegue(withIdentifier: "loginSegue", sender: Any?.self)
+            DispatchQueue.main.async(){
+                self.performSegue(withIdentifier: "loginSegue", sender: Any?.self)
+                
+            }
         }
         // Do any additional setup after loading the view, typically from a nib.
     }

@@ -21,7 +21,10 @@ class ReportViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-
+    @IBAction func onLogout(_ sender: Any) {
+        print("logging out")
+    }
+    
     @IBAction func onLogoutTapped(_ sender: Any) {
         logUserOut()
         self.performSegue(withIdentifier: "logoutSegue", sender: Any?.self)
