@@ -6,6 +6,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from  os import path
 from flask_security import Security, SQLAlchemyUserDatastore
+from flask_mail import Mail
 from config import Config
 
 app = Flask(__name__)
@@ -17,7 +18,16 @@ app.config['SECURITY_PASSWORD_SALT'] = 'super-secret'
 app.config['WTF_CSRF_ENABLED'] = False
 app.config['SECURITY_TOKEN_MAX_AGE'] = 60*60
 app.config['SECURITY_REGISTERABLE'] = True
+app.config['SECURITY_RECOVERABLE'] = True
 app.config['SECURITY_SEND_REGISTER_EMAIL'] = False
+app.config['SECURITY_POST_RESET_VIEW'] = '/reset-notice'
+
+# Setting mail server
+app.config['MAIL_SERVER'] = 'smtp.mailtrap.io'
+app.config['MAIL_PORT'] = 2525
+app.config['MAIL_USERNAME'] = '72d53b88edc279'
+app.config['MAIL_PASSWORD'] = '0400caefbd07e7'
+mail = Mail(app)
 
 # Setting Databse
 app.config['SQLALCHEMY_DATABASE_URI']= 'sqlite:///test.db'
@@ -40,10 +50,12 @@ def init_db():
 from App.models import User, Role, Report, ExtendedRegisterForm
 
 # Setup Flask-Security
+
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore, confirm_register_form=ExtendedRegisterForm)
 
 from App import views, api
+
 #if(not path.isfile('test.db')):
 #    init_db()
 

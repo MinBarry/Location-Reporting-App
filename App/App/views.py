@@ -81,6 +81,12 @@ def login_register_3rd_party(user):
     return jsonify({'response':{'user':{'authentication_token':auth_token, 'id':id}}})
 
 # TODO: Route to edit user
+@app.route('/reset-notice', methods=['GET'])
+def reset_password_notice():
+    return render_template(
+            'security/email/reset_notice.html',
+            year=datetime.now().year,
+            title='Reset Password Notice')
 
 # TODO: Route to delete user
 
