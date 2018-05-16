@@ -2,7 +2,7 @@
 //  reportViewController.swift
 //  Location-Reporting-App-IOS
 //
-//  Created by Minna on 5/9/18.
+//  Created by Minna Barry on 5/9/18.
 //  Copyright © 2018 Minna. All rights reserved.
 //
 
@@ -21,7 +21,13 @@ class ReportViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    @IBAction func logout(_ sender: Any) {
+    @IBAction func onLogout(_ sender: Any) {
+        print("logging out")
+    }
+    
+    @IBAction func onLogoutTapped(_ sender: Any) {
+        logUserOut()
+        self.performSegue(withIdentifier: "logoutSegue", sender: Any?.self)
     }
     
     

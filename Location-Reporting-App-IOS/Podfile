@@ -1,0 +1,24 @@
+# Uncomment the next line to define a global platform for your project
+platform :ios, '9.0'
+
+target 'Location-Reporting-App-IOS' do
+  use_frameworks!
+
+pod 'SwiftKeychainWrapper','~>3.0.1'
+pod 'GoogleMaps'
+pod 'GooglePlaces'
+
+  # Pods for Location-Reporting-App-IOS
+
+  target 'Location-Reporting-App-IOSTests' do
+    inherit! :search_paths
+    # Pods for testing
+  end
+
+  target 'Location-Reporting-App-IOSUITests' do
+    inherit! :search_paths
+    # Pods for testing
+  end
+  
+  
+end

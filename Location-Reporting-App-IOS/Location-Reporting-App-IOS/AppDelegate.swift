@@ -2,11 +2,13 @@
 //  AppDelegate.swift
 //  Location-Reporting-App-IOS
 //
-//  Created by Minna on 5/8/18.
+//  Created by Minna Barry on 5/8/18.
 //  Copyright © 2018 Minna. All rights reserved.
 //
 
 import UIKit
+import GoogleMaps
+import GooglePlaces
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -15,7 +17,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        GMSServices.provideAPIKey("AIzaSyAnHuGSP26eGIMAYK4rBqoXPj0GXZI9V8s")
+        GMSPlacesClient.provideAPIKey("AIzaSyAnHuGSP26eGIMAYK4rBqoXPj0GXZI9V8s")
         return true
     }
 

@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Location-Reporting-App-IOS/LoginViewController.swift"
-            timestampString = "547597529.846783"
+            timestampString = "547750282.869458"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "62"
-            endingLineNumber = "62"
+            startingLineNumber = "87"
+            endingLineNumber = "87"
             landmarkName = "doLogin(email:password:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Location-Reporting-App-IOS/LoginViewController.swift"
-            timestampString = "547597529.847733"
+            timestampString = "547750282.869539"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "81"
-            endingLineNumber = "81"
+            startingLineNumber = "107"
+            endingLineNumber = "107"
             landmarkName = "doLogin(email:password:)"
             landmarkType = "7">
          </BreakpointContent>
