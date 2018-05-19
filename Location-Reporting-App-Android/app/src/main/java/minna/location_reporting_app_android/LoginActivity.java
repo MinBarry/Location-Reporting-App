@@ -163,6 +163,14 @@ public class LoginActivity extends AppCompatActivity{
             }
         });
 
+        TextView resetButton = (TextView) findViewById(R.id.resetButton);
+        resetButton.setOnClickListener(new  OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(LoginActivity.this, EditAccountActivity.class));
+            }
+        });
+
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
     }
