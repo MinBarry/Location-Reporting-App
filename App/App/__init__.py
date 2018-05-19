@@ -19,8 +19,10 @@ app.config['WTF_CSRF_ENABLED'] = False
 app.config['SECURITY_TOKEN_MAX_AGE'] = 60*60
 app.config['SECURITY_REGISTERABLE'] = True
 app.config['SECURITY_RECOVERABLE'] = True
-app.config['SECURITY_SEND_REGISTER_EMAIL'] = False
+app.config['SECURITY_SEND_REGISTER_EMAIL'] = True
+app.config['SECURITY_CONFIRMABLE'] = True
 app.config['SECURITY_POST_RESET_VIEW'] = '/reset-notice'
+app.config['SECURITY_POST_CONFIRM_VIEW'] = '/confirm-notice'
 
 # Setting mail server
 app.config['MAIL_SERVER'] = 'smtp.mailtrap.io'

@@ -3,6 +3,8 @@ package minna.location_reporting_app_android;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 
@@ -17,6 +19,7 @@ import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.ClientError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -93,7 +96,7 @@ public class LoginActivity extends AppCompatActivity{
                 .requestEmail().requestIdToken(getString(R.string.server_client_id))
                 .build());
         mQueue = Singleton.getInstance(this.getApplicationContext()).getRequestQueue();
-
+        // setup facebook sign in
         LoginButton authButton = (LoginButton)findViewById(R.id.facebookSigin);
         authButton.setReadPermissions(Arrays.asList("email"));
         mCallbackManager = CallbackManager.Factory.create();
@@ -101,10 +104,7 @@ public class LoginActivity extends AppCompatActivity{
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-                        // App code
-
                         showProgress(true);
-
                         AccessToken token = AccessToken.getCurrentAccessToken();
                         if(token != null && !token.isExpired()){
                             Log.w("FACEBOOK", token.getToken());
@@ -115,16 +115,14 @@ public class LoginActivity extends AppCompatActivity{
                             mQueue.add(request);
                         }
                     }
-
+                    // TODO: handle on cancel and error
                     @Override
                     public void onCancel() {
-                        // App code
                         Log.w("FACEBOOK", "cancel");
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
-                        // App code
                         Log.w("FACEBOOK", "error");
                     }
                 });
@@ -222,7 +220,6 @@ public class LoginActivity extends AppCompatActivity{
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // TODO: Handle error google login error
-                        showProgress(false);
                         if (error instanceof TimeoutError) {
                             //TODO: handle
                             Log.w("LOG IN", new String("timeout error"));
@@ -231,10 +228,17 @@ public class LoginActivity extends AppCompatActivity{
                                 JSONObject responseData = new JSONObject(new String(error.networkResponse.data, "UTF-8"));
                                 if (responseData.has("response") && responseData.getJSONObject("response").has("errors")) {
                                     if (responseData.getJSONObject("response").getJSONObject("errors").has("email")) {
-                                        mEmailView.setError(responseData.getJSONObject("response").getJSONObject("errors").getString("email"));
+                                        String errorMsg = responseData.getJSONObject("response").getJSONObject("errors").getJSONArray("email").getString(0);
+                                        mEmailView.setError(errorMsg);
+                                        if(errorMsg.equals("Email requires confirmation.")){
+                                            Map<String, String> confirmParams = new HashMap<String, String>();
+                                            confirmParams.put("email", mEmailView.getText().toString());
+                                            JsonObjectRequest confirmRequest = confirmationRequest(getString(R.string.host_url)+"/confirm", confirmParams);
+                                            mQueue.add(confirmRequest);
+                                        }
 
                                     } else if (responseData.getJSONObject("response").getJSONObject("errors").has("password")) {
-                                        mPasswordView.setError(responseData.getJSONObject("response").getJSONObject("errors").getString("password"));
+                                        mPasswordView.setError(responseData.getJSONObject("response").getJSONObject("errors").getJSONArray("password").getString(0));
                                     }
                                     Log.w("LOG IN", new String(error.networkResponse.data, "UTF-8"));
                                 }
@@ -244,6 +248,7 @@ public class LoginActivity extends AppCompatActivity{
                                 Log.w("LOG IN", "Something went wrong with json");
                             }
                         }
+                        showProgress(false);
                     }
                 }) {
 
@@ -254,6 +259,45 @@ public class LoginActivity extends AppCompatActivity{
                 return headers;
             }
         };
+        return jsonObjectRequest;
+    }
+
+    JsonObjectRequest confirmationRequest(String url, Map<String,String> jsonparams){
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.POST, url, new JSONObject(jsonparams), new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LoginActivity.this);
+                        alertDialogBuilder.setMessage("A confirmation email has been sent. Please check your email.");
+                        alertDialogBuilder.setPositiveButton("Ok",
+                                new DialogInterface.OnClickListener(){
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                        AlertDialog alertDialog = alertDialogBuilder.create();
+                        alertDialog.show();
+
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO: Handle error
+
+                    }
+                }) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json; charset=utf-8");
+                return headers;
+            }
+        };
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(50 * 1000, 0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         return jsonObjectRequest;
     }
 

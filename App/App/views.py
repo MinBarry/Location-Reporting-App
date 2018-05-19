@@ -69,7 +69,7 @@ def login_register_3rd_party(user):
     # Create a new user
     if checkUser is None:
         user_datastore.create_user(email=user.email, password=generate_random_password(), 
-                                   firstname=user.firstname, lastname= user.lastname, username=user.username) #TODO: change lasname
+                                   firstname=user.firstname, lastname= user.lastname, username=user.username, confirmed_at=datetime.now())
         db.session.commit()
     # log user in
     user = User.query.filter_by(email=user.email).first()
@@ -80,13 +80,19 @@ def login_register_3rd_party(user):
     # return user id and token json
     return jsonify({'response':{'user':{'authentication_token':auth_token, 'id':id}}})
 
-# TODO: Route to edit user
 @app.route('/reset-notice', methods=['GET'])
 def reset_password_notice():
     return render_template(
             'security/email/reset_notice.html',
             year=datetime.now().year,
             title='Reset Password Notice')
+
+@app.route('/confirm-notice', methods=['GET'])
+def confirm_email_notice():
+    return render_template(
+            'security/email/confirm_notice.html',
+            year=datetime.now().year,
+            title='Confirm Email Notice')
 
 # TODO: Route to delete user
 
