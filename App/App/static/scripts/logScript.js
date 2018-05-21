@@ -7,6 +7,7 @@ var totalPages
 var types = ["Routine", "Emergency", "Special"]
 var selected_type
 var selected_distance
+var current_location
 
 // On document load funciton
 $(function () {
@@ -23,12 +24,21 @@ $(function () {
 // Request reports list
 ///////////////////////////////////////////
 function requestReportsList(page, type, distance) {
+    if (navigator.geolocation) {
+        coordinates = navigator.geolocation.getCurrentPosition(getLocation);
+    } else {
+        console.log("Geolocation is not supported by this browser.")
+    }
     url = "/api/reports?perpage=20&page=" + page
     if (types.includes(type)) {
         url = url + "&type="+ type 
     }
     if (distance >= 10) {
         url = url + "&distance=" + distance
+    }
+    if (current_location) {
+        console.log(current_location)
+        url = url + "&lat=" + current_location.latitude + "&lng=" + current_location.longitude
     }
     $(".pagination").empty()
     $("#reportsView").empty()
@@ -144,5 +154,13 @@ function initMap() {
         map: map
     })
     $("#map").hide()
+}
+
+///////////////////////////////////////////
+// Get user's current location
+///////////////////////////////////////////
+function getLocation(coordinates) {
+    current_location = coordinates.coords
+    console.log(coordinates)
 }
 

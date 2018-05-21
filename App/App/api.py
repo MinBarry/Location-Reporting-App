@@ -47,7 +47,6 @@ def get_reports_list():
     if 'perpage' in request.args:
         perpage = int(request.args.get('perpage'))       
     
-    #TODO: make efficient 
     reports = Report.query.filter()
     # Filter by type
     if 'type' in request.args:
@@ -68,7 +67,6 @@ def get_reports_list():
         bnd = bound(lat, lng, distance)
         reports = reports.filter((Report.lat >= bnd['S']['lat']) & (Report.lat <= bnd['N']['lat'])
                                       & (Report.lng >= bnd['W']['lng']) & (Report.lng <= bnd['E']['lng']))
-    # TODO: Filter by user
 
     reports = reports.order_by(Report.date.desc()).paginate(page=page, per_page=perpage, error_out=False)
     reportslist = []
