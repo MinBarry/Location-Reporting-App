@@ -19,7 +19,6 @@ import java.io.IOException;
 
 public class QrReader extends AppCompatActivity {
     SurfaceView mCameraView;
-    TextView qrCodeText;
     BarcodeDetector mDetector;
     CameraSource mCameraSource;
 
@@ -29,8 +28,6 @@ public class QrReader extends AppCompatActivity {
         setContentView(R.layout.activity_qr_reader);
         mCameraView = (SurfaceView)findViewById(R.id.surfaceView);
         mCameraView.setZOrderMediaOverlay(true);
-        qrCodeText = (TextView)findViewById(R.id.qrCodeText);
-        qrCodeText.setText("TEST");
 
         mDetector = new BarcodeDetector.Builder(this).setBarcodeFormats(Barcode.QR_CODE) .build();
         mCameraSource = new CameraSource.Builder(this, mDetector).setFacing(CameraSource.CAMERA_FACING_BACK).setAutoFocusEnabled(true).setRequestedPreviewSize(640, 480) .build();
@@ -64,7 +61,7 @@ public class QrReader extends AppCompatActivity {
             public void receiveDetections(Detector.Detections<Barcode> detections) {
                 SparseArray<Barcode> barcodes = detections.getDetectedItems();
                 if(barcodes.size()>0){
-                    String value = barcodes.valueAt(0).toString();
+                    String value = barcodes.valueAt(0).rawValue;
                     Intent intent = new Intent();
                     intent.putExtra("address", value);
                     setResult(QrReader.RESULT_OK, intent);

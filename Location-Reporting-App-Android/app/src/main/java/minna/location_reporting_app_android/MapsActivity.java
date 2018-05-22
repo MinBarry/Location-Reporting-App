@@ -22,7 +22,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-//TODO: add onlocationChange()
 public class MapsActivity extends AppCompatActivity
         implements OnMapReadyCallback {
 

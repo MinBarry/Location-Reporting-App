@@ -55,13 +55,12 @@ function requestReportsList(page, type, distance) {
                 $(".singleReport").removeClass("active")
                 $(this).addClass("active")
                 latlng = getLatLng($(this).attr("id"), reportsList)
-                //TODO: Don't display map if lat and lng == 0
+                $(this).next().show()
+                $(this).next().addClass("active")
                 if (latlng.lat != 0 && latlng.lng != 0) {
                     map.setCenter(latlng)
                     marker.setPosition(latlng)
-                    map.setZoom(15)
-                    $(this).next().show()
-                    $(this).next().addClass("active")
+                    map.setZoom(15)                  
                     $(this).next().find(".reportMap").append(map.getDiv())
                     $("#map").show()
                 }
@@ -161,6 +160,5 @@ function initMap() {
 ///////////////////////////////////////////
 function getLocation(coordinates) {
     current_location = coordinates.coords
-    console.log(coordinates)
 }
 

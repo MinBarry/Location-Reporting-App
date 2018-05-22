@@ -125,8 +125,10 @@ public class RegisterActivity extends AppCompatActivity {
                             String token = response.getJSONObject("response").getJSONObject("user").getString("authentication_token");
                             String userid = response.getJSONObject("response").getJSONObject("user").getString("id");
                             if(token.length() > 0 && userid.length() > 0){
-                                mSession.logUserIn(token, userid);
-                                startActivity(new Intent(RegisterActivity.this, MainActivity.class));
+                                Map<String, String> confirmParams = new HashMap<String, String>();
+                                confirmParams.put("email", mEmailView.getText().toString());
+                                JsonObjectRequest confirmRequest = confirmationRequest(getString(R.string.host_url)+"/confirm", confirmParams);
+                                mQueue.add(confirmRequest);
                             }
                         } catch (JSONException e) {
                             //showProgress(false);
@@ -146,7 +148,6 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         // TODO: Handle error
                         //TODO: parse server error messages
-                        //showProgress(false);
                         showProgress(false);
                         TextView mtextView = findViewById(R.id.textView2);
                         if (error instanceof TimeoutError){
@@ -167,12 +168,12 @@ public class RegisterActivity extends AppCompatActivity {
                                 JSONObject responseData = new JSONObject(new String(error.networkResponse.data,"UTF-8"));
                                 if(responseData.has("response") && responseData.getJSONObject("response").has("errors")) {
                                     if (responseData.getJSONObject("response").getJSONObject("errors").has("email")) {
-                                        mEmailView.setError(responseData.getJSONObject("response").getJSONObject("errors").getString("email"));
+                                        mEmailView.setError(responseData.getJSONObject("response").getJSONObject("errors").getJSONArray("email").getString(0));
 
                                     } else if (responseData.getJSONObject("response").getJSONObject("errors").has("password")) {
-                                        mPasswordView.setError(responseData.getJSONObject("response").getJSONObject("errors").getString("password"));
+                                        mPasswordView.setError(responseData.getJSONObject("response").getJSONObject("errors").getJSONArray("password").getString(0));
                                     } else if (responseData.getJSONObject("response").getJSONObject("errors").has("username")) {
-                                        mUsernameView.setError(responseData.getJSONObject("response").getJSONObject("errors").getString("username"));
+                                        mUsernameView.setError(responseData.getJSONObject("response").getJSONObject("errors").getJSONArray("username").getString(0));
                                     }
                                 }
                             } catch (Exception e) {
@@ -270,5 +271,44 @@ public class RegisterActivity extends AppCompatActivity {
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mForm.setVisibility(show ? View.GONE : View.VISIBLE);
         }
+    }
+
+    JsonObjectRequest confirmationRequest(String url, Map<String,String> jsonparams){
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.POST, url, new JSONObject(jsonparams), new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RegisterActivity.this);
+                        alertDialogBuilder.setMessage("A confirmation email has been sent. Please check your email.");
+                        alertDialogBuilder.setPositiveButton("Ok",
+                                new DialogInterface.OnClickListener(){
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                        AlertDialog alertDialog = alertDialogBuilder.create();
+                        alertDialog.show();
+
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO: Handle error
+
+                    }
+                }) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json; charset=utf-8");
+                return headers;
+            }
+        };
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(50 * 1000, 0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        return jsonObjectRequest;
     }
 }

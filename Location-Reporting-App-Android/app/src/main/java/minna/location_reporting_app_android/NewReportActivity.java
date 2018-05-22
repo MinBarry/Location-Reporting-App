@@ -214,10 +214,10 @@ public class NewReportActivity extends AppCompatActivity {
             return false;
         }
         if(mSelectedType.equals(getString(R.string.option_emergency))){
-                String newDesc = "Emergency Type: "+mTypeDropDown.getSelectedItem().toString()+".\n"+description;
+                String newDesc = "Emergency Type: "+mTypeDropDown.getSelectedItem().toString()+". \n"+description;
                 description = newDesc;
         }
-        if((lat == 0 && lng == 0) || mQrAddress.equals("")){
+        if((lat == 0 && lng == 0) && mQrAddress.equals("")){
             mErrorView.setText("You must specify your location");
             return false;
         }
