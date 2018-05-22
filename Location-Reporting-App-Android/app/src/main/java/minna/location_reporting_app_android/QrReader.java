@@ -7,6 +7,7 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.gms.vision.CameraSource;
@@ -26,12 +27,13 @@ public class QrReader extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qr_reader);
-
         mCameraView = (SurfaceView)findViewById(R.id.surfaceView);
+        mCameraView.setZOrderMediaOverlay(true);
         qrCodeText = (TextView)findViewById(R.id.qrCodeText);
+        qrCodeText.setText("TEST");
 
-        mDetector = new BarcodeDetector.Builder(this) .setBarcodeFormats(Barcode.QR_CODE) .build();
-        mCameraSource = new CameraSource.Builder(this, mDetector) .setRequestedPreviewSize(640, 480) .build();
+        mDetector = new BarcodeDetector.Builder(this).setBarcodeFormats(Barcode.QR_CODE) .build();
+        mCameraSource = new CameraSource.Builder(this, mDetector).setFacing(CameraSource.CAMERA_FACING_BACK).setAutoFocusEnabled(true).setRequestedPreviewSize(640, 480) .build();
 
         mCameraView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override public void surfaceCreated(SurfaceHolder holder) {
@@ -62,9 +64,9 @@ public class QrReader extends AppCompatActivity {
             public void receiveDetections(Detector.Detections<Barcode> detections) {
                 SparseArray<Barcode> barcodes = detections.getDetectedItems();
                 if(barcodes.size()>0){
-                    qrCodeText.setText(barcodes.valueAt(0).toString());
+                    String value = barcodes.valueAt(0).toString();
                     Intent intent = new Intent();
-                    intent.putExtra("address", barcodes.valueAt(0).toString());
+                    intent.putExtra("address", value);
                     setResult(QrReader.RESULT_OK, intent);
                     finish();
                 }

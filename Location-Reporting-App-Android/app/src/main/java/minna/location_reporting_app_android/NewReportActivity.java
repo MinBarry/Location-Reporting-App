@@ -183,7 +183,7 @@ public class NewReportActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(checkPermission(QR_CODE_REQUEST_CODE, Manifest.permission.CAMERA)){
                     mErrorView.setText("qr Camera permission granted");
-                    startActivityForResult(new Intent(NewReportActivity.this, QrReader.class), 3);
+                    startActivityForResult(new Intent(NewReportActivity.this, QrReader.class), QR_CODE_REQUEST_CODE);
                 }
             }
         });
@@ -217,11 +217,10 @@ public class NewReportActivity extends AppCompatActivity {
                 String newDesc = "Emergency Type: "+mTypeDropDown.getSelectedItem().toString()+".\n"+description;
                 description = newDesc;
         }
-        if(lat == 0 || lng == 0){
+        if((lat == 0 && lng == 0) || mQrAddress.equals("")){
             mErrorView.setText("You must specify your location");
             return false;
         }
-        mErrorView.setText(lat+" "+lng);
         String latString = ""+lat;
         String lngString = ""+lng;
 
@@ -348,6 +347,9 @@ public class NewReportActivity extends AppCompatActivity {
                 lat = data.getDoubleExtra("lat", 0);
                 lng = data.getDoubleExtra("lng", 0);
                 mLatLngAddress = getCompleteAddressString(lat,lng);
+                if(lat == 0 && lng ==0){
+                    mErrorView.setText("Could not get your current location. Make sure location services are enabled.");
+                }
 
             }
 
