@@ -98,6 +98,7 @@ public class NewReportActivity extends AppCompatActivity {
         mSelectedType="";
         mLatLngAddress="";
         mQrAddress="";
+        mCurrentPhotoPath = "";
         mDescriptionView = (TextView)  findViewById(R.id.description);
         mFormView = (View) findViewById(R.id.newReportForm);
         mProgressView = (View) findViewById(R.id.newReportProgress);
@@ -122,8 +123,6 @@ public class NewReportActivity extends AppCompatActivity {
         auth_token = mSession.getToken();
         user_id = mSession.getUserId();
 
-        mErrorView.setText(user_id+" "+auth_token);
-
         // Setup get current location button
         Button getLocatoion = (Button) findViewById(R.id.currentLocation);
         getLocatoion.setOnClickListener(new View.OnClickListener() {
@@ -145,13 +144,9 @@ public class NewReportActivity extends AppCompatActivity {
                 mPictureDialog.setTitle("Choose an option")
                         .setItems(R.array.image_picker, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                // The 'which' argument contains the index position
-                                // of the selected item
                                 switch (which){
                                     case 0:
-                                        //TODO: check camera permission
                                         if(checkPermission(TAKE_PICTURE_REQUEST_CODE, Manifest.permission.CAMERA)){
-                                            mErrorView.setText("Camera permission granted");
                                             dispatchTakePictureIntent();
                                         }
                                         break;
@@ -163,13 +158,10 @@ public class NewReportActivity extends AppCompatActivity {
                                 }
                             }
                         });
-                //TODO: check storage permission
                 if(checkPermission(CHOOSE_PICTURE_REQUEST_CODE, Manifest.permission.WRITE_EXTERNAL_STORAGE)){
-                    mErrorView.setText("storage permission granted");
                     mPictureDialog.create();
                     mPictureDialog.show();
                 }
-
             }
         });
         // setup remove picture button
@@ -555,6 +547,42 @@ public class NewReportActivity extends AppCompatActivity {
 
             }
         }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if(savedInstanceState != null){
+            mSelectedType = savedInstanceState.getString("type");
+            mLatLngAddress = savedInstanceState.getString("latlngAddress");
+            mQrAddress = savedInstanceState.getString("qrAddress");
+            if(!mLatLngAddress.equals("")) {
+                TextView view = (TextView) findViewById(R.id.latlngTextView);
+                view.setVisibility(View.VISIBLE);
+                view.setText(mLatLngAddress);
+            }
+            if(!mQrAddress.equals("")) {
+                TextView view = (TextView)findViewById(R.id.qrTextView);
+                view.setVisibility(View.VISIBLE);
+                view.setText(mQrAddress);
+            }
+            lat = savedInstanceState.getDouble("lat");
+            lng = savedInstanceState.getDouble("lng");
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mSelectedType!= null)
+            outState.putString("type", mSelectedType);
+        if(mLatLngAddress!= null)
+            outState.putString("latlngAddress", mLatLngAddress);
+        if(mQrAddress!= null)
+            outState.putString("qrAddress", mQrAddress);
+        outState.putDouble("lat",lat);
+        outState.putDouble("lng",lng);
+
     }
 
 }
