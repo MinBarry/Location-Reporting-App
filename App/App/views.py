@@ -13,7 +13,6 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from App import app, db, user_datastore
 from App.models import User
-from config import GOOGLE_CLIENT_ID, FACEBOOK_CLIENT_ID, FACEBOOK_CLIENT_SECRET
 
 @app.route('/')
 @login_required
@@ -34,7 +33,7 @@ def google_login():
     token = request.json.get('token')
     # authenticate token with google
     try:
-        idinfo = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID)
+        idinfo = id_token.verify_oauth2_token(token, requests.Request(), app.config['GOOGLE_CLIENT_ID'])
         if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
             raise ValueError('Wrong issuer.')
         userid = idinfo['sub']
@@ -53,7 +52,9 @@ def facebook_login():
     access_token = None
     #authenticate token with facebook
     try:
-        access_response = req.get('https://graph.facebook.com/oauth/access_token?client_id='+FACEBOOK_CLIENT_ID+'&client_secret='+FACEBOOK_CLIENT_SECRET+'&grant_type=client_credentials')
+        access_response = req.get('https://graph.facebook.com/oauth/access_token?client_id='
+                                  +app.config['FACEBOOK_CLIENT_ID']+'&client_secret='
+                                  +app.config['FACEBOOK_CLIENT_SECRET']+'&grant_type=client_credentials')
         access_token = access_response.json()['access_token']
         auth_response = req.get('https://graph.facebook.com/debug_token?input_token='+token+'&access_token='+access_token)
         userinfo = req.get('https://graph.facebook.com/v3.0/'+auth_response.json()['data']['user_id']+'?access_token='+access_token+'&fields=email,first_name,last_name')
@@ -93,8 +94,6 @@ def confirm_email_notice():
             'security/email/confirm_notice.html',
             year=datetime.now().year,
             title='Confirm Email Notice')
-
-# TODO: Route to delete user
 
 def generate_random_password(size=60):
     return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(size))

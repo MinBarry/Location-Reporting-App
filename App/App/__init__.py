@@ -5,60 +5,57 @@ The flask application package.
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from  os import path
+import getpass
+import datetime 
 from flask_security import Security, SQLAlchemyUserDatastore
 from flask_mail import Mail
 from config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
-	
-#TODO: Change secert keys
-app.config['SECRET_KEY'] = 'super-secret'
-app.config['SECURITY_PASSWORD_SALT'] = 'super-secret'
-app.config['WTF_CSRF_ENABLED'] = False
-app.config['SECURITY_TOKEN_MAX_AGE'] = 60*60
-app.config['SECURITY_REGISTERABLE'] = True
-app.config['SECURITY_RECOVERABLE'] = True
-app.config['SECURITY_SEND_REGISTER_EMAIL'] = True
-app.config['SECURITY_CONFIRMABLE'] = True
-app.config['SECURITY_POST_RESET_VIEW'] = '/reset-notice'
-app.config['SECURITY_POST_CONFIRM_VIEW'] = '/confirm-notice'
-
-# Setting mail server
-app.config['MAIL_SERVER'] = 'smtp.mailtrap.io'
-app.config['MAIL_PORT'] = 2525
-app.config['MAIL_USERNAME'] = '72d53b88edc279'
-app.config['MAIL_PASSWORD'] = '0400caefbd07e7'
 mail = Mail(app)
-
-# Setting Databse
-app.config['SQLALCHEMY_DATABASE_URI']= 'sqlite:///test.db'
 db = SQLAlchemy(app)
 
-def init_db():
-    db.create_all()
-    user_datastore.create_role(name='super', description='Can create admin users')
-    user_datastore.create_role(name='admin', description='Can view reports log')
-    user_datastore.create_role(name='user', description='Can create reports')
-    user_datastore.create_user(email='test@test.net', password='password')
-    user_datastore.create_user(email='admin@test.net', password='password')
-    user_datastore.create_user(email='user@test.net', password='password')
-    user_datastore.add_role_to_user('test@test.net', 'super')
-    user_datastore.add_role_to_user('admin@test.net', 'admin')
-    user_datastore.add_role_to_user('user@test.net', 'user')   
-    db.session.commit()
-
-
 from App.models import User, Role, Report, ExtendedRegisterForm
-
-# Setup Flask-Security
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore, confirm_register_form=ExtendedRegisterForm)
 
 from App import views, api
 
-#if(not path.isfile('test.db')):
-#    init_db()
+def init_db():
+    db.create_all()
+    user_datastore.create_role(name='super', description='Can create admin users')
+    user_datastore.create_role(name='admin', description='Can view reports log')
+    db.session.commit()
+
+@app.cli.command()
+def add_admin():
+    username = input("email: ")
+    if len(username)<1:
+        print("Username must be at least 1 chatacter long")
+        return
+    password = input("password: ")
+    if len(password)<6:
+        print("Password must be at least 6 chatacters long")
+        return
+    lat = input("Lattitude (optional): ")
+   
+    if lat:
+        lng = input("Longitude: ")
+    try:
+        if lat and lng:
+            user_datastore.create_user(email=username, password=password, confirmed_at=datetime.datetime.now(), lat=lat, lng=lng)
+        else:
+            user_datastore.create_user(email=username, password=password, confirmed_at=datetime.datetime.now())
+    
+        user_datastore.add_role_to_user(username, 'admin')
+        db.session.commit()
+        print("User created")
+    except:
+        print("User Already Exists")
+            
+
+
 
 
