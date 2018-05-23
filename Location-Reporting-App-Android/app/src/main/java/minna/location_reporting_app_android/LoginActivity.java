@@ -60,10 +60,10 @@ import static android.Manifest.permission.READ_CONTACTS;
 public class LoginActivity extends AppCompatActivity{
 
     public static final int GOOGLE_SIGNIN_CODE = 1;
-    public static final int FACEBOOK_SIGNIN_CODE = 2;
-    // UI references.
+
     private EditText mEmailView;
     private EditText mPasswordView;
+    private TextView mErrorView;
     private View mProgressView;
     private View mLoginFormView;
 
@@ -75,9 +75,6 @@ public class LoginActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //init facebook sdk
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        AppEventsLogger.activateApp(this);
         //check if user is logged in and move to main activity
         mSession = new UserSession(this);
         if(mSession.isUserLoggedIn()){
@@ -85,9 +82,15 @@ public class LoginActivity extends AppCompatActivity{
         }
         setContentView(R.layout.activity_login);
 
+        //init facebook sdk
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
+
         // Set up the login form.
         mEmailView = (EditText) findViewById(R.id.email);
         mPasswordView = (EditText) findViewById(R.id.password);
+        mErrorView = (TextView) findViewById(R.id.loginErrorView);
+
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         SignInButton googleSignIn = (SignInButton) findViewById(R.id.googleSignIn);
 
@@ -96,6 +99,7 @@ public class LoginActivity extends AppCompatActivity{
                 .requestEmail().requestIdToken(getString(R.string.server_client_id))
                 .build());
         mQueue = Singleton.getInstance(this.getApplicationContext()).getRequestQueue();
+
         // setup facebook sign in
         LoginButton authButton = (LoginButton)findViewById(R.id.facebookSigin);
         authButton.setReadPermissions(Arrays.asList("email"));
@@ -107,7 +111,6 @@ public class LoginActivity extends AppCompatActivity{
                         showProgress(true);
                         AccessToken token = AccessToken.getCurrentAccessToken();
                         if(token != null && !token.isExpired()){
-                            Log.w("FACEBOOK", token.getToken());
                             String url = getString(R.string.host_url)+"/facebook-login";
                             Map<String,String> params = new HashMap<String, String>();
                             params.put("token", token.getToken());
@@ -115,15 +118,13 @@ public class LoginActivity extends AppCompatActivity{
                             mQueue.add(request);
                         }
                     }
-                    // TODO: handle on cancel and error
                     @Override
                     public void onCancel() {
                         Log.w("FACEBOOK", "cancel");
                     }
-
                     @Override
                     public void onError(FacebookException exception) {
-                        Log.w("FACEBOOK", "error");
+                        mErrorView.setText(getString(R.string.error_login));
                     }
                 });
 
@@ -133,7 +134,7 @@ public class LoginActivity extends AppCompatActivity{
                 showProgress(true);
                 String email = mEmailView.getText().toString();
                 String password = mPasswordView.getText().toString();
-                if(isEmailValid(email)&& isPasswordValid(password)){
+                if(mSession.isEmailValid(email, mEmailView)&& mSession.isPasswordValid(password, mPasswordView)){
                     String url = getString(R.string.host_url)+"/login";
                     Map<String, String> jsonparams = new HashMap<String, String>();
                     jsonparams.put("email", email);
@@ -192,7 +193,6 @@ public class LoginActivity extends AppCompatActivity{
             showProgress(true);
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             String token = account.getIdToken();
-            Log.w("LOG IN", "google token = "+ token);
             //send server request
             String url = getString(R.string.host_url)+"/google-login";
             Map<String,String> params = new HashMap<String, String>();
@@ -201,7 +201,7 @@ public class LoginActivity extends AppCompatActivity{
             mQueue.add(request);
         } catch (ApiException e) {
             showProgress(false);
-            Log.w("LOG IN", "signInResult:failed code=" + e.getStatusCode());
+            mErrorView.setText(getString(R.string.error_login));
         }
     }
 
@@ -219,18 +219,15 @@ public class LoginActivity extends AppCompatActivity{
                             }
                         } catch (JSONException e) {
                             showProgress(false);
-                            Log.w("LOG IN", "Response: " + response.toString());
+                            mErrorView.setText(getString(R.string.error_try_again));
                         }
                         showProgress(false);
-                        Log.w("LOG IN", "Response: " + response.toString());
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // TODO: Handle error google login error
                         if (error instanceof TimeoutError) {
-                            //TODO: handle
-                            Log.w("LOG IN", new String("timeout error"));
+                            mErrorView.setText(getString(R.string.error_timeout));
                         } else if (error instanceof ClientError){
                             try {
                                 JSONObject responseData = new JSONObject(new String(error.networkResponse.data, "UTF-8"));
@@ -239,21 +236,18 @@ public class LoginActivity extends AppCompatActivity{
                                         String errorMsg = responseData.getJSONObject("response").getJSONObject("errors").getJSONArray("email").getString(0);
                                         mEmailView.setError(errorMsg);
                                         if(errorMsg.equals("Email requires confirmation.")){
-                                            Map<String, String> confirmParams = new HashMap<String, String>();
-                                            confirmParams.put("email", mEmailView.getText().toString());
-                                            JsonObjectRequest confirmRequest = confirmationRequest(getString(R.string.host_url)+"/confirm", confirmParams);
+                                            JsonObjectRequest confirmRequest = mSession.confirmationRequest( mEmailView.getText().toString());
                                             mQueue.add(confirmRequest);
                                         }
 
                                     } else if (responseData.getJSONObject("response").getJSONObject("errors").has("password")) {
                                         mPasswordView.setError(responseData.getJSONObject("response").getJSONObject("errors").getJSONArray("password").getString(0));
                                     }
-                                    Log.w("LOG IN", new String(error.networkResponse.data, "UTF-8"));
                                 }
                             } catch (UnsupportedEncodingException e) {
-                                Log.w("LOG IN", "Something went wrong");
+                                mErrorView.setText(getString(R.string.error_try_again));
                             } catch (JSONException e) {
-                                Log.w("LOG IN", "Something went wrong with json");
+                                mErrorView.setText(getString(R.string.error_try_again));
                             }
                         }
                         showProgress(false);
@@ -270,87 +264,28 @@ public class LoginActivity extends AppCompatActivity{
         return jsonObjectRequest;
     }
 
-    JsonObjectRequest confirmationRequest(String url, Map<String,String> jsonparams){
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.POST, url, new JSONObject(jsonparams), new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LoginActivity.this);
-                        alertDialogBuilder.setMessage("A confirmation email has been sent. Please check your email.");
-                        alertDialogBuilder.setPositiveButton("Ok",
-                                new DialogInterface.OnClickListener(){
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                        AlertDialog alertDialog = alertDialogBuilder.create();
-                        alertDialog.show();
-
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // TODO: Handle error
-
-                    }
-                }) {
-
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("Content-Type", "application/json; charset=utf-8");
-                return headers;
-            }
-        };
-        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(50 * 1000, 0,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        return jsonObjectRequest;
-    }
-
-    private boolean isEmailValid(String email) {
-        if(email.length()<1 || !email.contains("@") ){
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isPasswordValid(String password) {
-        if(password.length()<5){
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            return false;
-        }
-        return true;
-    }
-
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
+        int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
+        mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        mLoginFormView.animate().setDuration(shortAnimTime).alpha(
+                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            }
+        });
+
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mProgressView.animate().setDuration(shortAnimTime).alpha(
+                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 
 }

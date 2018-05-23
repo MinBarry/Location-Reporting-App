@@ -39,7 +39,9 @@ public class QrReader extends AppCompatActivity {
                 } catch (IOException ie) {
                     Log.e("CAMERA SOURCE", ie.getMessage());
                 } catch (SecurityException se){
-                    //TODO: handle no permission
+                    Intent intent = new Intent();
+                    setResult(QrReader.RESULT_CANCELED, intent);
+                    finish();
                 }
             }
             @Override

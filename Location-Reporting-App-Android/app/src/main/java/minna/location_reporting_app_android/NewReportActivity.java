@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -36,6 +37,7 @@ import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
@@ -51,6 +53,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import static android.icu.text.DateFormat.getDateInstance;
+
 public class NewReportActivity extends AppCompatActivity {
     public final static int CURRENT_LOCATION_REQUEST_CODE = 1;
     public final static int QR_CODE_REQUEST_CODE = 4;
@@ -61,7 +65,6 @@ public class NewReportActivity extends AppCompatActivity {
 
     private String mSelectedType;
     private String mCurrentPhotoPath;
-    private String mSelectedAddress;
     private String mLatLngAddress;
     private String mQrAddress;
     private String auth_token;
@@ -83,7 +86,6 @@ public class NewReportActivity extends AppCompatActivity {
     private Bitmap mSelectedImage;
     AlertDialog.Builder mPictureDialog;
 
-    //TODO: fix - selected type gets reset but radio button is still selected
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -182,7 +184,6 @@ public class NewReportActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(checkPermission(QR_CODE_REQUEST_CODE, Manifest.permission.CAMERA)){
-                    mErrorView.setText("qr Camera permission granted");
                     startActivityForResult(new Intent(NewReportActivity.this, QrReader.class), QR_CODE_REQUEST_CODE);
                 }
             }
@@ -232,7 +233,6 @@ public class NewReportActivity extends AppCompatActivity {
         }
 
         if (auth_token.length()==0 || user_id.length()==0) {
-            mErrorView.setText("not logged in properly");
             return false;
         }
         submitReportRequest(type, description,address,latString,lngString,image,user_id,auth_token);
@@ -260,7 +260,6 @@ public class NewReportActivity extends AppCompatActivity {
                 (Request.Method.POST, url, new JSONObject(jsonparams), new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        //String token = response.getString("response");
                         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(NewReportActivity.this);
                         alertDialogBuilder.setMessage("Your report has been submitted");
                         alertDialogBuilder.setPositiveButton("Ok",
@@ -278,10 +277,12 @@ public class NewReportActivity extends AppCompatActivity {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // TODO: Handle timeout error
+                        if (error instanceof TimeoutError){
+                            mErrorView.setText(getString(R.string.error_timeout));
+                        }
                         if(error instanceof AuthFailureError){
                             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(NewReportActivity.this);
-                            alertDialogBuilder.setMessage("Your session has ended, please log in again.");
+                            alertDialogBuilder.setMessage(getString(R.string.notice_session_end));
                             alertDialogBuilder.setPositiveButton("Ok",
                                     new DialogInterface.OnClickListener(){
                                         @Override
@@ -348,13 +349,13 @@ public class NewReportActivity extends AppCompatActivity {
                 lng = data.getDoubleExtra("lng", 0);
                 mLatLngAddress = getCompleteAddressString(lat,lng);
                 if(lat == 0 && lng ==0){
-                    mErrorView.setText("Could not get your current location. Make sure location services are enabled.");
+                    mErrorView.setText(getString(R.string.error_location));
                 }
 
             }
 
             if (resultCode == NewReportActivity.RESULT_CANCELED) {
-                mErrorView.setText("There was problem with getting your current location");
+                mErrorView.setText(getString(R.string.error_location));
             }
         } else if(requestCode == TAKE_PICTURE_REQUEST_CODE){
             if(resultCode == RESULT_OK){
@@ -370,7 +371,7 @@ public class NewReportActivity extends AppCompatActivity {
                     findViewById(R.id.addPicture).setVisibility(View.GONE);
                 }
             } else{
-                mErrorView.setText("There was problem with setting the picture");
+                mErrorView.setText(getString(R.string.error_set_picture));
             }
         } else if(requestCode == CHOOSE_PICTURE_REQUEST_CODE){
             if(resultCode == RESULT_OK) {
@@ -388,7 +389,7 @@ public class NewReportActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             } else{
-                mErrorView.setText("There was problem with setting the picture");
+                mErrorView.setText(getString(R.string.error_set_picture));
             }
         } else if (requestCode == QR_CODE_REQUEST_CODE){
             if(resultCode == RESULT_OK){
@@ -397,7 +398,7 @@ public class NewReportActivity extends AppCompatActivity {
                 addressView.setText(mQrAddress);
                 addressView.setVisibility(View.VISIBLE);
             } else{
-                mErrorView.setText("QR code was not detected");
+                mErrorView.setText(getString(R.string.error_camera));
             }
         }
     }
@@ -411,7 +412,7 @@ public class NewReportActivity extends AppCompatActivity {
             mCurrentPhotoPath = image.getAbsolutePath();
             return image;
         } catch (IOException e){
-            //TODO: handle io exception
+            mErrorView.setText(getString(R.string.error_storage));
         }
         return null;
     }
@@ -430,7 +431,7 @@ public class NewReportActivity extends AppCompatActivity {
                 startActivityForResult(takePictureIntent, TAKE_PICTURE_REQUEST_CODE);
             }
         }else{
-            //TODO: handle no camera available
+            mErrorView.setText(getString(R.string.error_camera));
         }
     }
 
@@ -460,7 +461,6 @@ public class NewReportActivity extends AppCompatActivity {
     private String getCompleteAddressString(double LATITUDE, double LONGITUDE) {
         String strAdd = "";
         TextView addressView = findViewById(R.id.latlngTextView);
-        addressView.setText("Setting addres..");
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
         try {
             List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
@@ -487,30 +487,25 @@ public class NewReportActivity extends AppCompatActivity {
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+        int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-            mFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
+        mFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        mFormView.animate().setDuration(shortAnimTime).alpha(
+                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            }
+        });
 
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mProgressView.animate().setDuration(shortAnimTime).alpha(
+                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 
     private boolean checkPermission(int code, String permission){
@@ -524,7 +519,7 @@ public class NewReportActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
         if (grantResults.length > 0
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             switch (requestCode) {
@@ -559,12 +554,12 @@ public class NewReportActivity extends AppCompatActivity {
             mLatLngAddress = savedInstanceState.getString("latlngAddress");
             mQrAddress = savedInstanceState.getString("qrAddress");
             if(!mLatLngAddress.equals("")) {
-                TextView view = (TextView) findViewById(R.id.latlngTextView);
+                TextView view = findViewById(R.id.latlngTextView);
                 view.setVisibility(View.VISIBLE);
                 view.setText(mLatLngAddress);
             }
             if(!mQrAddress.equals("")) {
-                TextView view = (TextView)findViewById(R.id.qrTextView);
+                TextView view = findViewById(R.id.qrTextView);
                 view.setVisibility(View.VISIBLE);
                 view.setText(mQrAddress);
             }

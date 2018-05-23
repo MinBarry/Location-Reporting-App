@@ -34,8 +34,8 @@ import java.util.Map;
 public class EditAccountActivity extends AppCompatActivity {
 
     TextView mEmailView;
+    TextView mErrorView;
     View mResetForm;
-    //TODO: fix progress view
     ProgressBar mProgressView;
     RequestQueue mQueue;
     @Override
@@ -44,7 +44,8 @@ public class EditAccountActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_account);
         mEmailView = (TextView) findViewById(R.id.resetEmail);
         mResetForm = (View) findViewById(R.id.resetPassForm);
-        mProgressView = (ProgressBar) findViewById(R.id.reset_progress);
+        mErrorView = (TextView) findViewById(R.id.registerErrorView);
+        mProgressView = (ProgressBar) findViewById(R.id.editAccount_progress);
         mQueue = Singleton.getInstance(EditAccountActivity.this).getRequestQueue();
         findViewById(R.id.resetButton).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,8 +93,7 @@ public class EditAccountActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         showProgress(false);
                         if (error instanceof TimeoutError) {
-                            //TODO: handle
-                            Log.w("LOG IN", new String("timeout error"));
+                            mErrorView.setText(getString(R.string.error_timeout));
                         } else if (error instanceof ClientError) {
                             try {
                                 JSONObject responseData = new JSONObject(new String(error.networkResponse.data, "UTF-8"));
@@ -102,18 +102,16 @@ public class EditAccountActivity extends AppCompatActivity {
                                         String errorMsg = responseData.getJSONObject("response").getJSONObject("errors").getJSONArray("email").getString(0);
                                         mEmailView.setError(errorMsg);
                                         if (errorMsg.equals("Email requires confirmation.")) {
-                                            Map<String, String> confirmParams = new HashMap<String, String>();
-                                            confirmParams.put("email", mEmailView.getText().toString());
-                                            JsonObjectRequest confirmRequest = confirmationRequest(getString(R.string.host_url) + "/confirm", confirmParams);
-                                            showProgress(true);
+                                            UserSession session = new UserSession(EditAccountActivity.this);
+                                            JsonObjectRequest confirmRequest = session.confirmationRequest(mEmailView.getText().toString());
                                             mQueue.add(confirmRequest);
                                         }
                                     }
                                 }
                             } catch (UnsupportedEncodingException e) {
-                                Log.w("Reset", "Something went wrong");
+                                mErrorView.setText(getString(R.string.error_try_again));
                             } catch (JSONException e) {
-                                Log.w("Reset", "Something went wrong with json");
+                                mErrorView.setText(getString(R.string.error_try_again));
                             }
                         }
                     }
@@ -129,70 +127,27 @@ public class EditAccountActivity extends AppCompatActivity {
         return jsonObjectRequest;
     }
 
-    JsonObjectRequest confirmationRequest(String url, Map<String,String> jsonparams){
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.POST, url, new JSONObject(jsonparams), new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(EditAccountActivity.this);
-                        alertDialogBuilder.setMessage("A confirmation email has been sent. Please check your email.");
-                        alertDialogBuilder.setPositiveButton("Ok",
-                                new DialogInterface.OnClickListener(){
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                        AlertDialog alertDialog = alertDialogBuilder.create();
-                        alertDialog.show();
-
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // TODO: Handle error
-
-                    }
-                }) {
-
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("Content-Type", "application/json; charset=utf-8");
-                return headers;
-            }
-        };
-        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(50 * 1000, 0,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        return jsonObjectRequest;
-    }
-
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-            mResetForm.setVisibility(show ? View.GONE : View.VISIBLE);
-            mResetForm.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mResetForm.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
+        int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mResetForm.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
+        mResetForm.setVisibility(show ? View.GONE : View.VISIBLE);
+        mResetForm.animate().setDuration(shortAnimTime).alpha(
+                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mResetForm.setVisibility(show ? View.GONE : View.VISIBLE);
+            }
+        });
+
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mProgressView.animate().setDuration(shortAnimTime).alpha(
+                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 }

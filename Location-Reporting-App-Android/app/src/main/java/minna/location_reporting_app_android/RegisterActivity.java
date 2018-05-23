@@ -33,7 +33,6 @@ import java.util.Map;
 public class RegisterActivity extends AppCompatActivity {
 
     private RequestQueue mQueue;
-    private UserSession mSession;
     private TextView mEmailView;
     private TextView mPasswordView;
     private TextView mConfirmPassView;
@@ -45,17 +44,18 @@ public class RegisterActivity extends AppCompatActivity {
     private TextView mAddress2View;
     private TextView mPostalcodeView;
     private TextView mProvinceView;
+    private TextView mErrorView;
     private View mForm;
     private View mProgressView;
+    private UserSession mSession;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        mSession = new UserSession(this);
         mQueue = Singleton.getInstance(this.getApplicationContext()).getRequestQueue();
-
+        mSession = new UserSession(this);
         mEmailView = findViewById(R.id.email);
         mPasswordView = findViewById(R.id.password);
         mConfirmPassView = findViewById(R.id.confirmPass);
@@ -67,6 +67,7 @@ public class RegisterActivity extends AppCompatActivity {
         mAddress2View = findViewById(R.id.address2);
         mPostalcodeView = findViewById(R.id.postalCode);
         mProvinceView = findViewById(R.id.province);
+        mErrorView = findViewById(R.id.registerErrorView);
         mForm = (View) findViewById(R.id.rgisterForm);
         mProgressView = (View) findViewById(R.id.registerPrrogress);
         Button submit = (Button)findViewById(R.id.submit);
@@ -87,14 +88,14 @@ public class RegisterActivity extends AppCompatActivity {
                 String phone = mPhoneView.getText().toString();
                 String province = mProvinceView.getText().toString();
                 String postalcode = mPostalcodeView.getText().toString();
-                valid = valid && isEmailValid(email) && isPasswordValid(password, confirmPass) && isAddressValid(address1,address2,province,postalcode) && isPhoneValid(phone)
+                valid = valid && mSession.isEmailValid(email,mEmailView) && mSession.isPasswordValid(password, mPasswordView)
+                        &&  mSession.isPasswordConfirmValid(password, confirmPass, mPasswordView)
                         && isNotEmpty(mUsernameView) && isNotEmpty(mFirstnameView) && isNotEmpty(mLastnameView);
                 if(valid){
                     submitReportRequest(email, password, username, firstname, lastname, phone, address1, address2, province, postalcode);
                 } else {
                    showProgress(false);
                 }
-
             }
         });
     }
@@ -112,11 +113,11 @@ public class RegisterActivity extends AppCompatActivity {
         jsonparams.put("address2", address2);
         jsonparams.put("province", province);
         jsonparams.put("postalcode", postalcode);
-        JsonObjectRequest jsonObjectRequest = createReportRequest(url, jsonparams);
+        JsonObjectRequest jsonObjectRequest = createRegidterRequest(url, jsonparams);
         mQueue.add(jsonObjectRequest);
     }
 
-    private JsonObjectRequest createReportRequest(String url, Map<String, String> jsonparams) {
+    private JsonObjectRequest createRegidterRequest(String url, Map<String, String> jsonparams) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.POST, url, new JSONObject(jsonparams), new Response.Listener<JSONObject>() {
                     @Override
@@ -125,46 +126,33 @@ public class RegisterActivity extends AppCompatActivity {
                             String token = response.getJSONObject("response").getJSONObject("user").getString("authentication_token");
                             String userid = response.getJSONObject("response").getJSONObject("user").getString("id");
                             if(token.length() > 0 && userid.length() > 0){
-                                Map<String, String> confirmParams = new HashMap<String, String>();
-                                confirmParams.put("email", mEmailView.getText().toString());
-                                JsonObjectRequest confirmRequest = confirmationRequest(getString(R.string.host_url)+"/confirm", confirmParams);
-                                mQueue.add(confirmRequest);
+                                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RegisterActivity.this);
+                                alertDialogBuilder.setMessage(getString(R.string.notice_confirmation));
+                                alertDialogBuilder.setPositiveButton("Ok",
+                                        new DialogInterface.OnClickListener(){
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                                startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                                            }
+                                        });
+                                AlertDialog alertDialog = alertDialogBuilder.create();
+                                alertDialog.show();
                             }
                         } catch (JSONException e) {
-                            //showProgress(false);
                             showProgress(false);
-                            //TODO: remove
-                            TextView mtextView = findViewById(R.id.textView2);
-                            mtextView.setText("Response: " + response.toString());
+                            mEmailView.setText(getString(R.string.error_try_again));
                         }
-                        //showProgress(false);
                         showProgress(false);
-                        //TODO: remove
-                        TextView mtextView = findViewById(R.id.textView2);
-                        mtextView.setText("Response: " + response.toString());
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // TODO: Handle error
-                        //TODO: parse server error messages
                         showProgress(false);
-                        TextView mtextView = findViewById(R.id.textView2);
                         if (error instanceof TimeoutError){
-                            final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RegisterActivity.this);
-                            alertDialogBuilder.setMessage("There was a network problem, please try again later.");
-                            alertDialogBuilder.setPositiveButton("Ok",
-                                    new DialogInterface.OnClickListener(){
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                        }
-                                    });
-                            AlertDialog alertDialog = alertDialogBuilder.create();
-                            alertDialog.show();
+                            mErrorView.setText(getString(R.string.error_timeout));
                         } else {
                             try {
-                                mtextView.setText(new String(error.networkResponse.data, "UTF-8"));
                                 JSONObject responseData = new JSONObject(new String(error.networkResponse.data,"UTF-8"));
                                 if(responseData.has("response") && responseData.getJSONObject("response").has("errors")) {
                                     if (responseData.getJSONObject("response").getJSONObject("errors").has("email")) {
@@ -177,17 +165,7 @@ public class RegisterActivity extends AppCompatActivity {
                                     }
                                 }
                             } catch (Exception e) {
-                                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RegisterActivity.this);
-                                alertDialogBuilder.setMessage("There was a problem, please try again later.");
-                                alertDialogBuilder.setPositiveButton("Ok",
-                                        new DialogInterface.OnClickListener(){
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.dismiss();
-                                            }
-                                        });
-                                AlertDialog alertDialog = alertDialogBuilder.create();
-                                alertDialog.show();
+                                mErrorView.setText(getString(R.string.error_try_again));
                             }
                         }
                     }
@@ -205,41 +183,9 @@ public class RegisterActivity extends AppCompatActivity {
         return jsonObjectRequest;
     }
 
-    private boolean isEmailValid(String email) {
-        //TODO:
-        if(email.length()<1 || !email.contains("@") ){
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isPasswordValid(String password, String confirmPass) {
-        //TODO:
-        if(password.length()<1){
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            return false;
-        }
-        if(!password.equals(confirmPass)){
-            mConfirmPassView.setError("Passwords don't match");
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isAddressValid(String address1, String address2, String province, String postalCode){
-        //TODO:
-        return true;
-    }
-
-    private boolean isPhoneValid(String phone){
-        //TODO:
-        return true;
-    }
-
     private boolean isNotEmpty(TextView view){
         if(view.getText().toString().length() < 1){
-            view.setError("This field is required");
+            view.setError(getString(R.string.error_field_required));
             return false;
         }
         return true;
@@ -271,44 +217,5 @@ public class RegisterActivity extends AppCompatActivity {
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mForm.setVisibility(show ? View.GONE : View.VISIBLE);
         }
-    }
-
-    JsonObjectRequest confirmationRequest(String url, Map<String,String> jsonparams){
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.POST, url, new JSONObject(jsonparams), new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RegisterActivity.this);
-                        alertDialogBuilder.setMessage("A confirmation email has been sent. Please check your email.");
-                        alertDialogBuilder.setPositiveButton("Ok",
-                                new DialogInterface.OnClickListener(){
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                        AlertDialog alertDialog = alertDialogBuilder.create();
-                        alertDialog.show();
-
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // TODO: Handle error
-
-                    }
-                }) {
-
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("Content-Type", "application/json; charset=utf-8");
-                return headers;
-            }
-        };
-        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(50 * 1000, 0,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        return jsonObjectRequest;
     }
 }

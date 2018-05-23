@@ -2,33 +2,47 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/resetPassForm"
+    android:id="@+id/resetPassLyout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".EditAccountActivity">
 
     <ProgressBar
-        android:id="@+id/reset_progress"
+        android:id="@+id/editAccount_progress"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:visibility="gone" />
 
-    <EditText
-        android:id="@+id/resetEmail"
+    <LinearLayout
+        android:id="@+id/resetPassForm"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:ems="10"
-        android:hint="Email"
-        android:inputType="textEmailAddress" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/resetButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Reset Password" />
+        <TextView
+            android:id="@+id/resetErrorView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible" />
+
+        <EditText
+            android:id="@+id/resetEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:hint="Email"
+            android:inputType="textEmailAddress" />
+
+        <Button
+            android:id="@+id/resetButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Reset Password" />
+
+    </LinearLayout>
 
 </LinearLayout>

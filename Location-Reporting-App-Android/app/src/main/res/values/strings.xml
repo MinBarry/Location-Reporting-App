@@ -6,7 +6,6 @@
     <string name="facebook_app_id">166468394185099</string>
     <string name="fb_login_protocol_scheme">fb166468394185099</string>
 
-    <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
     <string name="pref_name">minna.location-reporting-app-pref</string>
@@ -23,7 +22,16 @@
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
+    <string name="error_try_again">Something went wrong please try again later</string>
+    <string name="error_timeout">The connection timed out, Please make sure you are connected to the internet</string>
+    <string name="error_camera">Camera was not detected</string>
+    <string name="error_storage">Could not access storage</string>
+    <string name="error_set_picture">There was problem with setting the picture</string>
+    <string name="error_location">Could not get your current location. Make sure location services are enabled</string>
+    <string name="error_login">Could not log in</string>
 
+    <string name="notice_confirmation">A confirmation email has been sent. Please check your email</string>
+    <string name="notice_session_end">Your session has ended, please log in again</string>
 
     <string name="option_routine">Routine</string>
     <string name="option_special">Special</string>
