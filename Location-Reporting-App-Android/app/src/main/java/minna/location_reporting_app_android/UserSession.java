@@ -3,15 +3,18 @@ package minna.location_reporting_app_android;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.facebook.login.LoginManager;
@@ -106,7 +109,6 @@ public class UserSession{
                         Log.e("Confirmation Request",context.getString(R.string.error_timeout));
                     }
                 }) {
-
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<String, String>();
@@ -118,4 +120,49 @@ public class UserSession{
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         return jsonObjectRequest;
     }
+
+    public JsonObjectRequest validationRequest(){
+        String url = context.getString(R.string.host_url)+context.getString(R.string.route_validate);
+        Map<String, String> jsonparams = new HashMap<String, String>();
+        jsonparams.put("id", getUserId());
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.POST, url, new JSONObject(jsonparams), new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                    }
+                    }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if(error instanceof AuthFailureError){
+                            BuildSessionEndDialog();
+                        }
+                    }
+                }) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json; charset=utf-8");
+                headers.put("Authentication-Token", getToken());
+                return headers;
+            }
+        };
+        return jsonObjectRequest;
+    }
+
+    public void BuildSessionEndDialog(){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+        alertDialogBuilder.setMessage(context.getString(R.string.notice_session_end));
+        alertDialogBuilder.setPositiveButton("Ok",
+                new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        context.startActivity(new Intent(context, LoginActivity.class));
+                    }
+                });
+        logUserOut();
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
 }

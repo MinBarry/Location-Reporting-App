@@ -1,5 +1,5 @@
 from flask import json, jsonify, request, abort, make_response
-from flask_security import login_required, current_user, auth_token_required
+from flask_security import login_required, current_user, auth_token_required, logout_user
 from math import acos, asin, atan2, cos, sin, radians, degrees
 import datetime 
 from App import app, db
@@ -7,6 +7,7 @@ from App.models import Report, User
  
 report_types = ['Routine', 'Emergency','Special']
 success = {'code':1}
+
 # Route to create reports
 @app.route('/api/reports', methods = ['POST'])
 @auth_token_required
@@ -110,6 +111,15 @@ def delete_report():
     return jsonify(success)
 
 # TODO: Route to send emails to users
+
+# Route to validate user token
+@app.route('/api/validate', methods = ['POST'])
+@auth_token_required
+def validate_token():
+    if not request.json:
+        abort(400)
+    id = request.json.get('id')
+    return jsonify({'response':{'user':{'id':id}}})
 
 # Error handeling 
 @app.errorhandler(400)

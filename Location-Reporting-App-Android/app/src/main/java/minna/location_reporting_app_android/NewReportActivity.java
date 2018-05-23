@@ -90,10 +90,14 @@ public class NewReportActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_report);
-        // TODO: check if token exists and is valid
+        //check if token exists and is valid
         mSession = new UserSession(this);
-        if(!mSession.isUserLoggedIn()){
-           startActivity(new Intent(NewReportActivity.this, LoginActivity.class));
+        if(!mSession.isUserLoggedIn()) {
+            mSession.BuildSessionEndDialog();
+        }else {
+            JsonObjectRequest validateRequest = mSession.validationRequest();
+            RequestQueue queue = Singleton.getInstance(this.getApplicationContext()).getRequestQueue();
+            queue.add(validateRequest);
         }
 
         mQueue = Singleton.getInstance(this.getApplicationContext()).getRequestQueue();
@@ -294,7 +298,6 @@ public class NewReportActivity extends AppCompatActivity {
                             AlertDialog alertDialog = alertDialogBuilder.create();
                             alertDialog.show();
                         }
-                        mErrorView.setText(error.toString());
                         mErrorView.setVisibility(View.VISIBLE);
                         showProgress(false);
                     }

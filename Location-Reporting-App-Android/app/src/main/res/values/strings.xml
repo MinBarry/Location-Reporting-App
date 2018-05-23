@@ -39,7 +39,11 @@
 
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_maps">Get Location</string>
+
     <string name="host_url">https://minna-location-api.herokuapp.com</string>
+    <string name="route_login">/login</string>
+    <string name="route_register">/register</string>
+    <string name="route_validate">/api/validate</string>
 
      <string-array name="types_array">
          <item>Other</item>

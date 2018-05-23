@@ -12,6 +12,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.facebook.login.LoginManager;
 
 public class MainActivity extends AppCompatActivity {
@@ -23,18 +25,13 @@ public class MainActivity extends AppCompatActivity {
         //TODO: validate token
         final UserSession session = new UserSession(this);
         if(!session.isUserLoggedIn()) {
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
-            alertDialogBuilder.setMessage("Your session has ended, please log in again.");
-            alertDialogBuilder.setPositiveButton("Ok",
-                    new DialogInterface.OnClickListener(){
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            startActivity(new Intent(MainActivity.this, LoginActivity.class));
-                        }
-                    });
-            AlertDialog alertDialog = alertDialogBuilder.create();
-            alertDialog.show();
+            session.BuildSessionEndDialog();
+        } else {
+            JsonObjectRequest validateRequest = session.validationRequest();
+            RequestQueue queue = Singleton.getInstance(this.getApplicationContext()).getRequestQueue();
+            queue.add(validateRequest);
         }
+
         Button mSignout = (Button) findViewById(R.id.signout);
         final Button mEditAccount = (Button) findViewById(R.id.editAccount);
         Button mNewReport = (Button) findViewById(R.id.newReport);
