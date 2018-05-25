@@ -1,3 +1,7 @@
+"""
+Reports API.
+"""
+
 from flask import json, jsonify, request, abort, make_response
 from flask_security import login_required, current_user, auth_token_required, logout_user
 from math import acos, asin, atan2, cos, sin, radians, degrees
@@ -8,11 +12,10 @@ from App.models import Report, User
 report_types = ['Routine', 'Emergency','Special']
 success = {'code':1}
 
-# Route to create reports
 @app.route('/api/reports', methods = ['POST'])
 @auth_token_required
 def create_report():    
-    # Retrieve request contents 
+    """Create reports.""" 
     if not request.json or not 'type' in request.json or not 'user_id' in request.json:
         abort(400)
     type = request.json.get('type')
@@ -27,18 +30,16 @@ def create_report():
     imagedata = request.json.get('image')
     imagepath = save_image(imagedata,date,user_id)
     
-    # Save report to db
     report = Report(type, description, imagedata, address, lat, lng, date, user_id)
     db.session.add(report)
     db.session.flush()
     db.session.commit()
     return jsonify({'reports':report.jsonify()})
     
-    
-# Route to get reports list
 @app.route('/api/reports', methods = ['GET'])
 @login_required
 def get_reports_list():
+    """Returns report list."""
     if not current_user.has_role('admin') and not current_user.has_role('super'):
         abort(403)
     page = 1   
@@ -78,10 +79,10 @@ def get_reports_list():
             usersList.append(get_user_info(report.user_id).jsonify())
     return jsonify({'reports': reportslist, 'users':usersList, 'pages':reports.pages})
 
-# Route to get single report by id
 @app.route('/api/reports/<int:id>', methods = ['GET'])
 @login_required
 def get_report(id):
+    """Returns a single report by ID."""
     if not current_user.has_role('admin') and not current_user.has_role('super'):
         abort(403)
     report = Report.query.get(id)
@@ -89,10 +90,10 @@ def get_report(id):
         abort(404)
     return jsonify({'reports':report.jsonify()})
 
-# Route to delete reports
 @app.route('/api/reports', methods = ['DELETE'])
 @login_required
 def delete_report():
+    """Deletes a single report by id."""
     if not current_user.has_role('admin') and not current_user.has_role('super'):
         abort(403)
     if not request.json or not 'id' in request.json:
@@ -112,15 +113,6 @@ def delete_report():
 
 # TODO: Route to send emails to users
 
-# Route to validate user token
-@app.route('/api/validate', methods = ['POST'])
-@auth_token_required
-def validate_token():
-    if not request.json:
-        abort(400)
-    id = request.json.get('id')
-    return jsonify({'response':{'user':{'id':id}}})
-
 # Error handeling 
 @app.errorhandler(400)
 def not_found(error):
@@ -136,18 +128,20 @@ def not_found(error):
 
 # Helper Functions
 def get_user_info(id):
+    """returns a single user by id."""
     user = User.query.get(id)
     if not user:
         return None
     return user
 
 def save_image(imagedata, date, user_id):
+    """Saves image to file."""
     imagepath = None
     # TODO: generate key and save image
     return imagepath
 
-# Calculates distnace from two points in km
 def distance(fromLat, fromLng, toLat, toLng):
+    """Calculates distnace from two points in km."""
     distance = 6371 * acos (
           cos(radians(fromLat)) * cos(radians( toLat ))
           * cos(radians(toLng) - radians(fromLng))
@@ -155,15 +149,15 @@ def distance(fromLat, fromLng, toLat, toLng):
         )
     return distance
 
-# Calculate bound box for an area around a point
 def bound(lat, lng, distance):
+    """Calculate bound box for an area around a point."""
     return {'N': destination(lat,lng, 0, distance),
             'E': destination(lat,lng, 90, distance),
             'S': destination(lat,lng, 180, distance),
             'W': destination(lat,lng, 270, distance)}
 
-# Helper function to find bounds
 def destination(fromLat, fromLng, bearing, distance):
+    """Helper function to find bounds."""
     radius = 6371
     rlat = radians(fromLat)
     rlng = radians(fromLng)

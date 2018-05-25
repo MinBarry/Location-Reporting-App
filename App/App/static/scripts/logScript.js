@@ -1,5 +1,3 @@
-// TODO: change Google maps API Key: AIzaSyBbVKx_ahhNY0PBFheQ_dH6XNssuk78zqk
-
 var map
 var marker
 var reportsList
@@ -9,9 +7,8 @@ var selected_type
 var selected_distance
 var current_location
 
-// On document load funciton
 $(function () {
-    // Request report list
+    // When document loads Request report list
     $("#filter-btn").click(function () {
         selected_type = $("#sel_type").val()
         selected_distance = parseInt($("#sel_distance").val())
@@ -20,9 +17,9 @@ $(function () {
     requestReportsList(1)
 })
 
-///////////////////////////////////////////
-// Request reports list
-///////////////////////////////////////////
+/**
+* Request reports list.
+*/
 function requestReportsList(page, type, distance) {
     if (navigator.geolocation) {
         coordinates = navigator.geolocation.getCurrentPosition(getLocation);
@@ -70,9 +67,9 @@ function requestReportsList(page, type, distance) {
 }
 
 
-///////////////////////////////////////////
-// Displays reports summary list on page
-///////////////////////////////////////////
+/**
+* Generate html to display reports.
+*/
 function displayReports(reports, users) {
     $.each(reports, function (i, report) {
         user = users[i]
@@ -85,7 +82,6 @@ function displayReports(reports, users) {
             "<tr class='singleReport' id=" + report.id + ">" +
             "<td>" + report.id + "</td>" +
             "<td>" + user.username + "</td>" +
-           // "<td>" + report.location + "</td>" +
             "<td>" + report.date + "</td>" +
             "<td>" + report.type + "</td>" +
             "<td>" + report.description + "</td></tr>" +
@@ -102,9 +98,9 @@ function displayReports(reports, users) {
     })
 }
 
-///////////////////////////////////////////
-// Create page panel
-///////////////////////////////////////////
+/**
+* Create page panel.
+*/
 function setPagination(numPages, currentPage) {
     $(".pagination").empty()
     for (var i = 1; i <= numPages; i++) {
@@ -119,17 +115,17 @@ function setPagination(numPages, currentPage) {
     })
 }
 
-///////////////////////////////////////////
-// Search
-///////////////////////////////////////////
+/**
+* Sets the search filter options.
+*/
 function search() {
     type = $("#sel_type").text()
     distance = $("#sel_distance").text()
 }
 
-///////////////////////////////////////////
-// Returns lat lng of given report id
-///////////////////////////////////////////
+/**
+* Returns lat lng of given report id.
+*/
 function getLatLng(report_id, reports) {
     for (i = 0; i < reports.length; i++) {
         if (reports[i].id == report_id) {
@@ -139,9 +135,9 @@ function getLatLng(report_id, reports) {
     return { lat: 0, lng: 0 }
 }
 
-///////////////////////////////////////////
-// Google map initilazation
-///////////////////////////////////////////
+/**
+* Google map initilazation.
+*/
 function initMap() {
     var uluru = { lat: 0, lng: 0}
     map = new google.maps.Map(document.getElementById('map'), {
@@ -155,9 +151,9 @@ function initMap() {
     $("#map").hide()
 }
 
-///////////////////////////////////////////
-// Get user's current location
-///////////////////////////////////////////
+/**
+* Get user's current location.
+*/
 function getLocation(coordinates) {
     current_location = coordinates.coords
 }

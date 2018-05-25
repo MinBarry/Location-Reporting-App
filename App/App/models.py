@@ -1,3 +1,7 @@
+"""
+Database models.
+"""
+
 from flask_security import UserMixin, RoleMixin
 from wtforms import StringField, BooleanField
 from wtforms.validators import DataRequired
@@ -75,8 +79,7 @@ class ExtendedRegisterForm(ConfirmRegisterForm):
                 self.postalcode.errors.append('Postal code is invalid')
                 return False
         return True
-
-# Represents Report table        
+       
 class Report(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.String(64), index=True)

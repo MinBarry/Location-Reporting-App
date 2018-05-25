@@ -1,0 +1,4 @@
+#!/bin/bash
+source env/Scripts/activate
+export FLASK_APP=runserver.py
+Flask init_db

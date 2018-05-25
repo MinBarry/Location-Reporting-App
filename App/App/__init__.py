@@ -23,6 +23,7 @@ security = Security(app, user_datastore, confirm_register_form=ExtendedRegisterF
 
 from App import views, api
 
+@app.cli.command()
 def init_db():
     db.create_all()
     user_datastore.create_role(name='super', description='Can create admin users')
