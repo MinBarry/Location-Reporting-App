@@ -24,7 +24,9 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-
+/**
+ * Handles user login, logout and confirmation
+ */
 public class UserSession{
 
     private Context context;
@@ -34,12 +36,20 @@ public class UserSession{
         this.context = context;
         this.mSharedPreferences = context.getSharedPreferences(context.getString(R.string.pref_name), context.MODE_PRIVATE);
     }
+
+    /**
+     * Logs user in
+     */
     public void logUserIn(String token, String id){
         SharedPreferences.Editor mEditor = mSharedPreferences.edit();
         mEditor.putString(context.getString(R.string.token_key), token);
         mEditor.putString(context.getString(R.string.user_key), id);
         mEditor.apply();
     }
+
+    /**
+     * Logs user out
+     */
     public void logUserOut(){
         SharedPreferences.Editor mEditor = mSharedPreferences.edit();
         mEditor.remove(context.getString(R.string.token_key));
@@ -47,18 +57,31 @@ public class UserSession{
         mEditor.apply();
         LoginManager.getInstance().logOut();
     }
+
+    /**
+     * Check if the given user is logged in
+     */
     public boolean isUserLoggedIn(){
         return (mSharedPreferences.contains(context.getString(R.string.token_key)));
     }
 
+    /**
+     * Returns logged in user token
+     */
     public String getToken() {
         return mSharedPreferences.getString(context.getString(R.string.token_key),"");
     }
 
+    /**
+     * Returns logged in user id
+     */
     public String getUserId(){
         return mSharedPreferences.getString(context.getString(R.string.user_key),"");
     }
 
+    /**
+     * Checks if given email is the right format
+     */
     public boolean isEmailValid(String email, TextView emailView) {
         if(email.length()<1 || !email.contains("@") ){
             emailView.setError(context.getString(R.string.error_invalid_email));
@@ -66,7 +89,9 @@ public class UserSession{
         }
         return true;
     }
-
+    /**
+     * Checks if given passwords match
+     */
     public boolean isPasswordConfirmValid(String password, String confirmPass, TextView passwordView) {
         if(password.length()<1){
             passwordView.setError(context.getString(R.string.error_invalid_password));
@@ -74,7 +99,9 @@ public class UserSession{
         }
         return true;
     }
-
+    /**
+     * Checks if given password is the right format
+     */
     public boolean isPasswordValid(String password, TextView passwordView) {
         if(password.length()<5){
             passwordView.setError(context.getString(R.string.error_invalid_password));
@@ -82,9 +109,11 @@ public class UserSession{
         }
         return true;
     }
-
+    /**
+     * Send a confirmation request and notify the user
+     */
     public JsonObjectRequest confirmationRequest(String email){
-        String url = context.getString(R.string.host_url)+"/confirm";
+        String url = context.getString(R.string.host_url)+context.getString(R.string.route_confirm);
         Map<String, String> jsonparams = new HashMap<String, String>();
         jsonparams.put("email", email);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
@@ -92,7 +121,7 @@ public class UserSession{
                     @Override
                     public void onResponse(JSONObject response) {
                         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-                        alertDialogBuilder.setMessage("A confirmation email has been sent. Please check your email.");
+                        alertDialogBuilder.setMessage(context.getString(R.string.notice_confirmation));
                         alertDialogBuilder.setPositiveButton("Ok",
                                 new DialogInterface.OnClickListener(){
                                     @Override
@@ -120,7 +149,9 @@ public class UserSession{
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         return jsonObjectRequest;
     }
-
+    /**
+     * Send a token validation request and logs user out if it expired
+     */
     public JsonObjectRequest validationRequest(){
         String url = context.getString(R.string.host_url)+context.getString(R.string.route_validate);
         Map<String, String> jsonparams = new HashMap<String, String>();
@@ -149,7 +180,9 @@ public class UserSession{
         };
         return jsonObjectRequest;
     }
-
+    /**
+     * Builds and displays a session end dialog
+     */
     public void BuildSessionEndDialog(){
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         alertDialogBuilder.setMessage(context.getString(R.string.notice_session_end));

@@ -55,7 +55,8 @@ import java.util.Map;
 import static android.Manifest.permission.READ_CONTACTS;
 
 /**
- * A login screen that offers login via email/password.
+ * Login activity that offers login via  google, facebook or
+ * email/password.
  */
 public class LoginActivity extends AppCompatActivity{
 
@@ -111,7 +112,7 @@ public class LoginActivity extends AppCompatActivity{
                         showProgress(true);
                         AccessToken token = AccessToken.getCurrentAccessToken();
                         if(token != null && !token.isExpired()){
-                            String url = getString(R.string.host_url)+"/facebook-login";
+                            String url = getString(R.string.host_url)+getString(R.string.route_facebook);
                             Map<String,String> params = new HashMap<String, String>();
                             params.put("token", token.getToken());
                             JsonObjectRequest request = createLoginRequest(url, params);
@@ -135,7 +136,7 @@ public class LoginActivity extends AppCompatActivity{
                 String email = mEmailView.getText().toString();
                 String password = mPasswordView.getText().toString();
                 if(mSession.isEmailValid(email, mEmailView)&& mSession.isPasswordValid(password, mPasswordView)){
-                    String url = getString(R.string.host_url)+"/login";
+                    String url = getString(R.string.host_url)+getString(R.string.route_login);
                     Map<String, String> jsonparams = new HashMap<String, String>();
                     jsonparams.put("email", email);
                     jsonparams.put("password",password);
@@ -175,7 +176,9 @@ public class LoginActivity extends AppCompatActivity{
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
     }
-
+    /**
+     * Handles google login result
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -187,14 +190,16 @@ public class LoginActivity extends AppCompatActivity{
             mCallbackManager.onActivityResult(requestCode, resultCode, data);
         }
     }
-
+    /**
+     * Helper that logs user in using google
+     */
     private void handleGoogleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             showProgress(true);
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             String token = account.getIdToken();
             //send server request
-            String url = getString(R.string.host_url)+"/google-login";
+            String url = getString(R.string.host_url)+getString(R.string.route_google);
             Map<String,String> params = new HashMap<String, String>();
             params.put("token", token);
             JsonObjectRequest request = createLoginRequest(url, params);
@@ -204,7 +209,9 @@ public class LoginActivity extends AppCompatActivity{
             mErrorView.setText(getString(R.string.error_login));
         }
     }
-
+    /**
+     * Sends a login request and starts main activity if login was successful
+     */
     private JsonObjectRequest createLoginRequest(String url, Map<String,String> jsonparams){
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.POST, url, new JSONObject(jsonparams), new Response.Listener<JSONObject>() {
@@ -263,7 +270,9 @@ public class LoginActivity extends AppCompatActivity{
         };
         return jsonObjectRequest;
     }
-
+    /**
+     * Display progress bar
+     */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
 

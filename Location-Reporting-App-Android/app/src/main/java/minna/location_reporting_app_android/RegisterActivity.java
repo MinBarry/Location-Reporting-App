@@ -30,6 +30,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Registers a new user
+ */
 public class RegisterActivity extends AppCompatActivity {
 
     private RequestQueue mQueue;
@@ -101,7 +104,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void submitReportRequest(String email, String password, String username, String firstname, String lastname, String phone, String address1, String address2, String province, String postalcode){
-        String url = getString(R.string.host_url)+"/register";
+        String url = getString(R.string.host_url)+getString(R.string.route_register);
         Map<String, String> jsonparams = new HashMap<String, String>();
         jsonparams.put("email", email);
         jsonparams.put("password",password);

@@ -206,11 +206,14 @@ public class NewReportActivity extends AppCompatActivity {
         });
 
     }
-    // sets report data, checks if they are valid and submits report request
+
+    /**
+     * sets report data, checks if they are valid and submits report request
+     */
     private boolean submitReport(){
         String type = mSelectedType;
         if(mSelectedType.length()<1){
-            mErrorView.setText("You must select a type");
+            mErrorView.setText(getString(R.string.error_set_type));
             return false;
         }
         String description = mDescriptionView.getText().toString();
@@ -223,7 +226,7 @@ public class NewReportActivity extends AppCompatActivity {
                 description = newDesc;
         }
         if((lat == 0 && lng == 0) && mQrAddress.equals("")){
-            mErrorView.setText("You must specify your location");
+            mErrorView.setText(getString(R.string.error_set_location));
             return false;
         }
         String latString = ""+lat;
@@ -243,8 +246,11 @@ public class NewReportActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Sends a new report request
+     */
     private void submitReportRequest(String type, String desc, String address, String lat, String lng, String image, String userid, String auth_token){
-        String url = getString(R.string.host_url)+"/api/reports";
+        String url = getString(R.string.host_url)+getString(R.string.route_report);
         Map<String, String> jsonparams = new HashMap<String, String>();
         jsonparams.put("type", type);
         jsonparams.put("description",desc);
@@ -259,13 +265,16 @@ public class NewReportActivity extends AppCompatActivity {
         mQueue.add(jsonObjectRequest);
     }
 
+    /**
+     * Create a new report request object
+     */
     private JsonObjectRequest createReportRequest(String url, Map<String, String> jsonparams, final String auth_token) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.POST, url, new JSONObject(jsonparams), new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(NewReportActivity.this);
-                        alertDialogBuilder.setMessage("Your report has been submitted");
+                        alertDialogBuilder.setMessage(getString(R.string.notice_submit_report));
                         alertDialogBuilder.setPositiveButton("Ok",
                                 new DialogInterface.OnClickListener(){
                                     @Override
@@ -316,6 +325,9 @@ public class NewReportActivity extends AppCompatActivity {
         return jsonObjectRequest;
     }
 
+    /**
+     * Specify the type from radio options
+     */
     public void onRadioButtonClicked(View view){
         // Check which radio button was clicked
         mTypeDropDown.setVisibility(View.GONE);
@@ -342,7 +354,9 @@ public class NewReportActivity extends AppCompatActivity {
         }
     }
 
-    // Result from MapsActivity, picture picker and qr scanner
+    /**
+     * Handles result from MapsActivity, picture picker and qr scanner
+     **/
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -406,6 +420,9 @@ public class NewReportActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Creates a file to store an image in
+     */
     private File createImageFile() {
         try {
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -420,6 +437,9 @@ public class NewReportActivity extends AppCompatActivity {
         return null;
     }
 
+    /**
+     * Starts the camera to take pictures
+     */
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
@@ -438,6 +458,9 @@ public class NewReportActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Compresses the given image to Base64
+     */
     public String compressImage(Bitmap bitmap, int quality) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, quality, bos);
@@ -445,6 +468,9 @@ public class NewReportActivity extends AppCompatActivity {
         return Base64.encodeToString(imageBytes, Base64.DEFAULT);
     }
 
+    /**
+     * Helper to gets the selected quality
+     */
     public int getQuality(){
         int quality = 10;
         switch (mQualityDropDown.getSelectedItem().toString()){
@@ -461,6 +487,9 @@ public class NewReportActivity extends AppCompatActivity {
         return quality;
     }
 
+    /**
+     * Generates the address of the given coordinates
+     */
     private String getCompleteAddressString(double LATITUDE, double LONGITUDE) {
         String strAdd = "";
         TextView addressView = findViewById(R.id.latlngTextView);
@@ -479,7 +508,6 @@ public class NewReportActivity extends AppCompatActivity {
                 strAdd = "Latitude: "+LATITUDE+"\nLongtitude: "+LONGITUDE;
             }
         } catch (Exception e) {
-            e.printStackTrace();
             strAdd = "Latitude: "+LATITUDE+"\nLongtitude: "+LONGITUDE;
         }
         //show address to user

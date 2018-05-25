@@ -22,6 +22,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+/**
+ * Gets the user's current location and displays it on a map
+ */
 public class MapsActivity extends AppCompatActivity
         implements OnMapReadyCallback {
 
@@ -76,7 +79,9 @@ public class MapsActivity extends AppCompatActivity
              mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
         } catch (SecurityException e)  {
-            Log.e("Exception: %s", e.getMessage());
+            Intent intent = new Intent();
+            setResult(QrReader.RESULT_CANCELED, intent);
+            finish();
         }
     }
 
@@ -94,8 +99,6 @@ public class MapsActivity extends AppCompatActivity
                                         mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
                         Log.d(TAG, String.format(" " + mLastKnownLocation.getLongitude()+" "+mLastKnownLocation.getLatitude() ));
                     } else {
-                        Log.d(TAG, "Current location is null. Using defaults.");
-                        Log.e(TAG, "Exception: %s", task.getException());
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
                         mMap.getUiSettings().setMyLocationButtonEnabled(false);
                     }
@@ -103,7 +106,9 @@ public class MapsActivity extends AppCompatActivity
                 });
 
         } catch(SecurityException e)  {
-            Log.e("Exception: %s", e.getMessage());
+            Intent intent = new Intent();
+            setResult(QrReader.RESULT_CANCELED, intent);
+            finish();
         }
     }
 }

@@ -31,6 +31,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Allows the user to reset their password
+ */
 public class EditAccountActivity extends AppCompatActivity {
 
     TextView mEmailView;
@@ -53,7 +56,7 @@ public class EditAccountActivity extends AppCompatActivity {
                 String email = mEmailView.getText().toString();
                 if (isEmailValid(email)){
                     showProgress(true);
-                    String url = getString(R.string.host_url)+"/reset";
+                    String url = getString(R.string.host_url)+getString(R.string.route_reset);
                     Map<String,String> params = new HashMap<String, String>();
                     params.put("email", email);
                     JsonObjectRequest restRequest = resetPasswordRequest(url,params);
@@ -77,7 +80,7 @@ public class EditAccountActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(EditAccountActivity.this);
-                        alertDialogBuilder.setMessage("An email has been sent with instructions to reset password.");
+                        alertDialogBuilder.setMessage(getString(R.string.notice_reset_email));
                         alertDialogBuilder.setPositiveButton("Ok",
                                 new DialogInterface.OnClickListener(){
                                     @Override

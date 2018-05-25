@@ -72,6 +72,8 @@
                 android:id="@+id/loginErrorView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp"
                 android:visibility="visible" />
 
             <android.support.design.widget.TextInputLayout

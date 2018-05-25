@@ -1,10 +1,11 @@
 <resources>
     <string name="app_name">Location Reporting App</string>
     <!-- google client ID for google login -->
-    <string name="server_client_id">333088297286-th7rtelj0mfl2ihqkkl1eb819enj6083.apps.googleusercontent.com</string>
+    <string name="server_client_id">843415494844-bj3hc1i42846vrccp8ug50sktgalqnep.apps.googleusercontent.com</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBKMqyswmLwGVHwcCm4zneD3iKsx4wWcuc</string>
     <!-- Facebook app ID for Facebook login -->
-    <string name="facebook_app_id">166468394185099</string>
-    <string name="fb_login_protocol_scheme">fb166468394185099</string>
+    <string name="facebook_app_id">231489680949064</string>
+    <string name="fb_login_protocol_scheme">fb231489680949064</string>
 
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
@@ -29,9 +30,13 @@
     <string name="error_set_picture">There was problem with setting the picture</string>
     <string name="error_location">Could not get your current location. Make sure location services are enabled</string>
     <string name="error_login">Could not log in</string>
+    <string name="error_set_type">You must select a type</string>
+    <string name="error_set_location">You must specify your location</string>
 
     <string name="notice_confirmation">A confirmation email has been sent. Please check your email</string>
     <string name="notice_session_end">Your session has ended, please log in again</string>
+    <string name="notice_reset_email">An email has been sent with instructions to reset password</string>
+    <string name="notice_submit_report">Your report has been submitted</string>
 
     <string name="option_routine">Routine</string>
     <string name="option_special">Special</string>
@@ -39,11 +44,17 @@
 
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_maps">Get Location</string>
-
+    
     <string name="host_url">https://minna-location-api.herokuapp.com</string>
+
     <string name="route_login">/login</string>
     <string name="route_register">/register</string>
-    <string name="route_validate">/api/validate</string>
+    <string name="route_validate">/validate</string>
+    <string name="route_report">/api/reports</string>
+    <string name="route_confirm">/confirm</string>
+    <string name="route_google">/google-login</string>
+    <string name="route_facebook">/facebook-login</string>
+    <string name="route_reset">/reset</string>
 
      <string-array name="types_array">
          <item>Other</item>

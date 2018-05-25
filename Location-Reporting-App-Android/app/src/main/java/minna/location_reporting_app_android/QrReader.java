@@ -17,6 +17,9 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
 
+/**
+ * Displays a camera to scan qr codes
+ */
 public class QrReader extends AppCompatActivity {
     SurfaceView mCameraView;
     BarcodeDetector mDetector;
@@ -37,7 +40,9 @@ public class QrReader extends AppCompatActivity {
                 try {
                     mCameraSource.start(mCameraView.getHolder());
                 } catch (IOException ie) {
-                    Log.e("CAMERA SOURCE", ie.getMessage());
+                    Intent intent = new Intent();
+                    setResult(QrReader.RESULT_CANCELED, intent);
+                    finish();
                 } catch (SecurityException se){
                     Intent intent = new Intent();
                     setResult(QrReader.RESULT_CANCELED, intent);

@@ -16,13 +16,15 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.facebook.login.LoginManager;
 
+/**
+ * Main menu activity
+ */
 public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         // check if user is logged in
-        //TODO: validate token
         final UserSession session = new UserSession(this);
         if(!session.isUserLoggedIn()) {
             session.BuildSessionEndDialog();
