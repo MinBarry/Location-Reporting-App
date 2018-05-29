@@ -121,7 +121,7 @@ public class LoginActivity extends AppCompatActivity{
                     }
                     @Override
                     public void onCancel() {
-                        Log.w("FACEBOOK", "cancel");
+                        mErrorView.setText(getString(R.string.cancel_login));
                     }
                     @Override
                     public void onError(FacebookException exception) {

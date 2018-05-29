@@ -135,7 +135,7 @@ public class UserSession{
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.e("Confirmation Request",context.getString(R.string.error_timeout));
+
                     }
                 }) {
             @Override

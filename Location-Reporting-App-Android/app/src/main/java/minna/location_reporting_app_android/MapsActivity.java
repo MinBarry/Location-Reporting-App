@@ -97,7 +97,6 @@ public class MapsActivity extends AppCompatActivity
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                 new LatLng(mLastKnownLocation.getLatitude(),
                                         mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
-                        Log.d(TAG, String.format(" " + mLastKnownLocation.getLongitude()+" "+mLastKnownLocation.getLatitude() ));
                     } else {
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
                         mMap.getUiSettings().setMyLocationButtonEnabled(false);

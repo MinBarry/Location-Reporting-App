@@ -32,6 +32,7 @@
     <string name="error_login">Could not log in</string>
     <string name="error_set_type">You must select a type</string>
     <string name="error_set_location">You must specify your location</string>
+    <string name="cancel_login">Login canceled</string>
 
     <string name="notice_confirmation">A confirmation email has been sent. Please check your email</string>
     <string name="notice_session_end">Your session has ended, please log in again</string>
@@ -44,7 +45,7 @@
 
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_maps">Get Location</string>
-    
+
     <string name="host_url">https://minna-location-api.herokuapp.com</string>
 
     <string name="route_login">/login</string>
