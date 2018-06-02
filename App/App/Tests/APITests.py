@@ -120,8 +120,6 @@ class APITestClass(unittest.TestCase):
             self.assertEqual(respone.status_code,200)
             respone = self.app.get('/api/reports/'+str(ids[i]))
             self.assertEqual(respone.status_code,404)
-    
-    # TODO: test save image
 
     def test_distnace_functions(self):
         # test 1
@@ -227,10 +225,6 @@ class APITestClass(unittest.TestCase):
         self.assertIn(id1 , [ r['id'] for r in json.loads(respone.data)['reports']])
         self.assertIn(id2 , [ r['id'] for r in json.loads(respone.data)['reports']])
 
-        # TOD0: Test distnace and type search
-
-        # TODO: Test user search
-        # TODO: delete reports
 
     # Helper functions
     def create_report(self, type, description, address, lat, lng, imagedata, userid):

@@ -1,2 +1,15 @@
 curl -i -H "Content-Type: application/json" -X GET  http://localhost:5000/api/reports
 curl -i -H "Content-Type: application/json" -X POST -d '{"type":"Routine","description":"testing report","address":"bla bla at bla","lat":"122312323231","lng":"23233434343","image":"imagedata"}' http://localhost:5000/api/reports
+
+r = requests.post('http://127.0.0.1:63801/register', data=json.dumps({'email':'1112@example.com', 'password':'test123', 'address1':'address1','address2':'address2', 'firstname':'Ron', 'lastname':'Weesley','province':'hogwarts','postalcode':'3343', 'phone':'27287277','username':'wizard'}), headers={'content-type': 'application/json'})
+r = requests.post('http://127.0.0.1:53051/register', data=json.dumps({'email':'1113@example.com', 'password':'test123', 'address1':'address1','address2':'address2', 'firstname':'Ron', 'lastname':'Weesley','province':'hogwarts','postalcode':'3343333', 'phone':'no phone','username':'wizard2'}), headers={'content-type': 'application/json'})
+r = requests.post('http://127.0.0.1:53051/register', data=json.dumps({'email':'1113@example.com', 'password':'test123', 'address1':'address1','address2':'address2', 'firstname':'Ron', 'lastname':'Weesley','province':'hogwarts','postalcode':'fhfhf', 'phone':'23536725367','username':'wizard2'}), headers={'content-type': 'application/json'})
+r = requests.post('http://127.0.0.1:53051/register', data=json.dumps({'email':'1113@example.com', 'password':'test123', 'address1':'address1','address2':'address2', 'firstname':'Ron', 'lastname':'Weesley','province':'hogwarts','postalcode':'3343333', 'phone':'23536725367','username':'wizard2'}), headers={'content-type': 'application/json'})
+
+r = requests.post('http://127.0.0.1:'+str(port)+'/facebook-login', data=json.dumps({'token':'EAACXZAvGAcYsBABogiZAwge4otLlzim4Ol2ufqZAJrXxXWLVXGYdbKxk8BW0jAZBJ64xpZAQYn8p3JjUgSvUN8whbKeWerpTeCCmIyaRTLi1ZCqjROgbYYXsRo3T6G3Sbx7eTpUHcyaWOkLWIk07KjlTKV513XnZA2jKC5ZCi7BDZC2yOG6LieukFtF6074gAeo7LnmhZAwFZCITQZDZD'}), headers={'content-type': 'application/json'})
+
+r = requests.post('http://127.0.0.1:'+str(port)+'/confirm', data=json.dumps({'email':'min@test.com'}), headers={'content-type': 'application/json'})
+
+
+r = requests.post('http://127.0.0.1:'+str(port)+'/login', data=json.dumps({'email': email, 'password': password}), headers={'content-type': 'application/json'})
+r = requests.post('http://127.0.0.1:'+str(port)+'/api/validate', data=json.dumps({'id': id}), headers={'content-type': 'application/json', 'Authentication-Token':token})

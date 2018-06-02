@@ -1,6 +1,0 @@
-framework module Pods_Location_Reporting_App_IOS {
-  umbrella header "Pods-Location-Reporting-App-IOS-umbrella.h"
-
-  export *
-  module * { export * }
-}

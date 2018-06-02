@@ -1,11 +1,11 @@
 <resources>
     <string name="app_name">Location Reporting App</string>
-    <!-- google client ID for google login -->
-    <string name="server_client_id">843415494844-bj3hc1i42846vrccp8ug50sktgalqnep.apps.googleusercontent.com</string>
-    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBKMqyswmLwGVHwcCm4zneD3iKsx4wWcuc</string>
-    <!-- Facebook app ID for Facebook login -->
-    <string name="facebook_app_id">231489680949064</string>
-    <string name="fb_login_protocol_scheme">fb231489680949064</string>
+    <!-- TODO: google client ID for google login -->
+    <string name="server_client_id"></string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false"></string>
+    <!-- TODO: Facebook app ID for Facebook login -->
+    <string name="facebook_app_id"></string>
+    <string name="fb_login_protocol_scheme"></string>
 
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
@@ -46,6 +46,7 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_maps">Get Location</string>
 
+    <!-- TODO: Add server url-->
     <string name="host_url">https://minna-location-api.herokuapp.com</string>
 
     <string name="route_login">/login</string>

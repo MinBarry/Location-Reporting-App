@@ -1,0 +1,4 @@
+#!/bin/bash
+source env/Scripts/activate
+
+gunicorn -b localhost:5000 -w 4 App:app

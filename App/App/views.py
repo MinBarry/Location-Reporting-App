@@ -7,7 +7,7 @@ import string
 import random
 import requests as req
 from flask import redirect, url_for, render_template, abort, request, jsonify, json
-from flask_security import login_required, current_user
+from flask_security import login_required, current_user, auth_token_required
 from flask_security.utils import login_user
 from google.oauth2 import id_token
 from google.auth.transport import requests

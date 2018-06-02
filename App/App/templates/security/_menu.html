@@ -1,0 +1,7 @@
+{% if security.registerable or security.recoverable or security.confirmable %}
+<ul>
+  {% if security.recoverable %}
+  <li><a href="{{ url_for_security('forgot_password') }}">{{ _('Forgot password') }}</a><br/></li>
+  {% endif %}
+</ul>
+{% endif %}
